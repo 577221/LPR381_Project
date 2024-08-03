@@ -11,11 +11,13 @@ namespace LPR381_Project
         private string problemType;
         private int[] objFunction;
         private int[] constraints;
+        private int[] rhsConstraints;
         private string[] signRestrictions;
 
         public string ProblemType { get => problemType; set => problemType = value; }
         public int[] ObjFunction { get => objFunction; set => objFunction = value; }
         public int[] Constraints { get => constraints; set => constraints = value; }
+        public int[] RhsConstraints { get => rhsConstraints; set => rhsConstraints = value; }
         public string[] SignRestrictions { get => signRestrictions; set => signRestrictions = value; }
 
         public FileHandler(string filepath)
