@@ -12,26 +12,37 @@ namespace LPR381_Project
 {
     public partial class Main : Form
     {
-        // Created global variable to use the FileHandler Class
+        // Created global variable to use the FileHandler and Knapsack Class
         private FileHandler fileHandler;
+        private Knapsack knapsack;
 
         public Main()
         {
             InitializeComponent();
-            // Initializing the FileHandler Class as an object
+            // Initializing the FileHandler and Knapsack Class as an object
             fileHandler = new FileHandler("input.txt");
+            knapsack = new Knapsack();
         }
 
         private void Main_Load(object sender, EventArgs e)
         {
-
+            
         }
 
-        private void btnLoad_Click(object sender, EventArgs e)
+        private void btnClear_Click(object sender, EventArgs e)
         {
-            // Read and display the file content using FileHandler
+            rtxDisplay.Clear();
+        }
+
+        private void btnLoad_Click_1(object sender, EventArgs e)
+        {
             string fileContent = fileHandler.ReadFile();
-            richTextBox1.Text = fileContent;
+            rtxDisplay.Text = fileContent;
+        }
+
+        private void btnSolve_Click(object sender, EventArgs e)
+        {
+            rtxDisplay.Text = fileHandler.ToString();
         }
     }
 }

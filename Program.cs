@@ -18,6 +18,5 @@ namespace LPR381_Project
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
         }
-
     }
 }
