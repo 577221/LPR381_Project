@@ -7,11 +7,11 @@ namespace LPR381_Project
     {
         private string problemType;
         private int[] objFunction;
-        private int[] constraintsCoefficients;
+        private int[,] constraintsCoefficients;
         private int[] rhsConstraints;
         private string[] signRestrictions;
 
-        public Knapsack(string problemType, int[] objFunction, int[] constraintsCoefficients, int[] rhsConstraints, string[] signRestrictions)
+        public Knapsack(string problemType, int[] objFunction, int[,] constraintsCoefficients, int[] rhsConstraints, string[] signRestrictions)
         {
             this.problemType = problemType;
             this.objFunction = objFunction;
@@ -22,27 +22,28 @@ namespace LPR381_Project
 
         public string ProblemType { get => problemType; set => problemType = value; }
         public int[] ObjFunction { get => objFunction; set => objFunction = value; }
-        public int[] Constraints { get => constraintsCoefficients; set => constraintsCoefficients = value; }
+        public int[,] Constraints { get => constraintsCoefficients; set => constraintsCoefficients = value; }
         public int[] RhsConstraints { get => rhsConstraints; set => rhsConstraints = value; }
         public string[] SignRestrictions { get => signRestrictions; set => signRestrictions = value; }
 
         // Method to solve the knapsack problem
-        public void Solve()
+        public string Solve()
         {
             int n = objFunction.Length;
-            int W = RhsConstraints[0]; // Knapsack capacity
+            int W = rhsConstraints[0]; // Knapsack capacity
             int[] weights = new int[n];
             int[] values = new int[n];
 
             for (int i = 0; i < n; i++)
             {
-                weights[i] = constraintsCoefficients[0][i];
+                weights[i] = constraintsCoefficients[0, i];
                 values[i] = objFunction[i];
             }
 
             int[,] K = new int[n + 1, W + 1];
+            string iterations = "";
 
-            // Build table K[][] in bottom-up manner and display iterations
+            // Build table K[][] in bottom-up manner and capture iterations
             for (int i = 0; i <= n; i++)
             {
                 for (int w = 0; w <= W; w++)
@@ -54,8 +55,8 @@ namespace LPR381_Project
                     else
                         K[i, w] = K[i - 1, w];
 
-                    // Display the current iteration
-                    DisplayCurrentIteration(K, n, W);
+                    // Capture the current iteration
+                    iterations += CaptureCurrentIteration(K, i, w);
                 }
             }
 
@@ -74,34 +75,38 @@ namespace LPR381_Project
                 }
             }
 
-            // Display the final best answer
-            DisplayBestAnswer(selectedItems);
+            // Capture the final best answer
+            string bestAnswer = CaptureBestAnswer(selectedItems);
+
+            return iterations + bestAnswer;
         }
 
-        // Method to display the current iteration of the ranking table
-        private void DisplayCurrentIteration(int[,] K, int n, int W)
+        // Method to capture the current iteration of the ranking table
+        private string CaptureCurrentIteration(int[,] K, int i, int w)
         {
-            Console.WriteLine("Current Iteration:");
-            for (int i = 0; i <= n; i++)
+            string iteration = $"Iteration [{i},{w}]:\n";
+            for (int x = 0; x <= K.GetLength(0) - 1; x++)
             {
-                for (int w = 0; w <= W; w++)
+                for (int y = 0; y <= K.GetLength(1) - 1; y++)
                 {
-                    Console.Write(K[i, w] + "\t");
+                    iteration += K[x, y] + "\t";
                 }
-                Console.WriteLine();
+                iteration += "\n";
             }
-            Console.WriteLine();
+            iteration += "\n";
+            return iteration;
         }
 
-        // Method to display the final best answer
-        private void DisplayBestAnswer(List<int> selectedItems)
+        // Method to capture the final best answer
+        private string CaptureBestAnswer(List<int> selectedItems)
         {
-            Console.WriteLine("Best Answer:");
-            Console.WriteLine("Selected items:");
+            string bestAnswer = "Best Answer:\n";
+            bestAnswer += "Selected items:\n";
             foreach (var item in selectedItems)
             {
-                Console.WriteLine("Item " + item + " with value " + objFunction[item] + " and weight " + constraints[0][item]);
+                bestAnswer += $"Item {item + 1} with value {objFunction[item]} and weight {constraintsCoefficients[0, item]}\n";
             }
+            return bestAnswer;
         }
     }
 }

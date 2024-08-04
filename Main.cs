@@ -43,15 +43,8 @@ namespace LPR381_Project
 
         private void btnSolve_Click(object sender, EventArgs e)
         {
-            if (fileHandler == null)
+            if (fileHandler != null)
             {
-                MessageBox.Show("Please load the file first.");
-                return;
-            }
-
-            try
-            {
-                // Solve the knapsack problem
                 Knapsack knapsack = new Knapsack(
                     fileHandler.ProblemType,
                     fileHandler.ObjFunction,
@@ -60,14 +53,12 @@ namespace LPR381_Project
                     fileHandler.SignRestrictions
                 );
 
-                knapsack.Solve();
-
-                // You can display the knapsack solution in the richTextBoxOutput if needed
-                rtxDisplay.AppendText("\nKnapsack problem solved.");
+                string result = knapsack.Solve();
+                rtxDisplay.AppendText(result);
             }
-            catch (Exception ex)
+            else
             {
-                rtxDisplay.AppendText($"\nError: {ex.Message}");
+                rtxDisplay.AppendText("Please load a file first.\n");
             }
         }
     }
