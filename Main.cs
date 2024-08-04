@@ -61,5 +61,10 @@ namespace LPR381_Project
                 rtxDisplay.AppendText("Please load a file first.\n");
             }
         }
+
+        private void btnBranchAndBound_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

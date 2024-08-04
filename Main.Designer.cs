@@ -29,32 +29,36 @@
         private void InitializeComponent()
         {
             this.rtxDisplay = new System.Windows.Forms.RichTextBox();
-            this.btnSolve = new System.Windows.Forms.Button();
+            this.btnKnapsack = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
             this.btnLoad = new System.Windows.Forms.Button();
+            this.btnBranchAndBound = new System.Windows.Forms.Button();
+            this.btnCuttingPlane = new System.Windows.Forms.Button();
+            this.btnPrimal = new System.Windows.Forms.Button();
+            this.btnRevisedPrimal = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // rtxDisplay
             // 
-            this.rtxDisplay.Location = new System.Drawing.Point(32, 91);
+            this.rtxDisplay.Location = new System.Drawing.Point(32, 28);
             this.rtxDisplay.Name = "rtxDisplay";
-            this.rtxDisplay.Size = new System.Drawing.Size(561, 207);
+            this.rtxDisplay.Size = new System.Drawing.Size(561, 386);
             this.rtxDisplay.TabIndex = 0;
             this.rtxDisplay.Text = "";
             // 
-            // btnSolve
+            // btnKnapsack
             // 
-            this.btnSolve.Location = new System.Drawing.Point(428, 21);
-            this.btnSolve.Name = "btnSolve";
-            this.btnSolve.Size = new System.Drawing.Size(165, 53);
-            this.btnSolve.TabIndex = 2;
-            this.btnSolve.Text = "Solve using Knapsack";
-            this.btnSolve.UseVisualStyleBackColor = true;
-            this.btnSolve.Click += new System.EventHandler(this.btnSolve_Click);
+            this.btnKnapsack.Location = new System.Drawing.Point(32, 445);
+            this.btnKnapsack.Name = "btnKnapsack";
+            this.btnKnapsack.Size = new System.Drawing.Size(165, 53);
+            this.btnKnapsack.TabIndex = 2;
+            this.btnKnapsack.Text = "Knapsack";
+            this.btnKnapsack.UseVisualStyleBackColor = true;
+            this.btnKnapsack.Click += new System.EventHandler(this.btnSolve_Click);
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(32, 21);
+            this.btnClear.Location = new System.Drawing.Point(623, 103);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(165, 53);
             this.btnClear.TabIndex = 3;
@@ -64,7 +68,7 @@
             // 
             // btnLoad
             // 
-            this.btnLoad.Location = new System.Drawing.Point(217, 21);
+            this.btnLoad.Location = new System.Drawing.Point(623, 28);
             this.btnLoad.Name = "btnLoad";
             this.btnLoad.Size = new System.Drawing.Size(165, 53);
             this.btnLoad.TabIndex = 4;
@@ -72,14 +76,55 @@
             this.btnLoad.UseVisualStyleBackColor = true;
             this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click_1);
             // 
+            // btnBranchAndBound
+            // 
+            this.btnBranchAndBound.Location = new System.Drawing.Point(235, 445);
+            this.btnBranchAndBound.Name = "btnBranchAndBound";
+            this.btnBranchAndBound.Size = new System.Drawing.Size(165, 53);
+            this.btnBranchAndBound.TabIndex = 5;
+            this.btnBranchAndBound.Text = "Branch and Bound";
+            this.btnBranchAndBound.UseVisualStyleBackColor = true;
+            this.btnBranchAndBound.Click += new System.EventHandler(this.btnBranchAndBound_Click);
+            // 
+            // btnCuttingPlane
+            // 
+            this.btnCuttingPlane.Location = new System.Drawing.Point(439, 445);
+            this.btnCuttingPlane.Name = "btnCuttingPlane";
+            this.btnCuttingPlane.Size = new System.Drawing.Size(165, 53);
+            this.btnCuttingPlane.TabIndex = 6;
+            this.btnCuttingPlane.Text = "Cutting Plane";
+            this.btnCuttingPlane.UseVisualStyleBackColor = true;
+            // 
+            // btnPrimal
+            // 
+            this.btnPrimal.Location = new System.Drawing.Point(643, 445);
+            this.btnPrimal.Name = "btnPrimal";
+            this.btnPrimal.Size = new System.Drawing.Size(165, 53);
+            this.btnPrimal.TabIndex = 7;
+            this.btnPrimal.Text = "Primal Simplex";
+            this.btnPrimal.UseVisualStyleBackColor = true;
+            // 
+            // btnRevisedPrimal
+            // 
+            this.btnRevisedPrimal.Location = new System.Drawing.Point(855, 445);
+            this.btnRevisedPrimal.Name = "btnRevisedPrimal";
+            this.btnRevisedPrimal.Size = new System.Drawing.Size(165, 53);
+            this.btnRevisedPrimal.TabIndex = 8;
+            this.btnRevisedPrimal.Text = "Revised Primal Simplex";
+            this.btnRevisedPrimal.UseVisualStyleBackColor = true;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(633, 450);
+            this.ClientSize = new System.Drawing.Size(1272, 525);
+            this.Controls.Add(this.btnRevisedPrimal);
+            this.Controls.Add(this.btnPrimal);
+            this.Controls.Add(this.btnCuttingPlane);
+            this.Controls.Add(this.btnBranchAndBound);
             this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.btnClear);
-            this.Controls.Add(this.btnSolve);
+            this.Controls.Add(this.btnKnapsack);
             this.Controls.Add(this.rtxDisplay);
             this.Name = "Main";
             this.Text = "Form1";
@@ -91,9 +136,13 @@
         #endregion
 
         private System.Windows.Forms.RichTextBox rtxDisplay;
-        private System.Windows.Forms.Button btnSolve;
+        private System.Windows.Forms.Button btnKnapsack;
         private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Button btnLoad;
+        private System.Windows.Forms.Button btnBranchAndBound;
+        private System.Windows.Forms.Button btnCuttingPlane;
+        private System.Windows.Forms.Button btnPrimal;
+        private System.Windows.Forms.Button btnRevisedPrimal;
     }
 }
 
