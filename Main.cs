@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace LPR381_Project
@@ -19,9 +12,6 @@ namespace LPR381_Project
         public Main()
         {
             InitializeComponent();
-            // Initializing the FileHandler and Knapsack Class as an object
-            fileHandler = new FileHandler("input.txt");
-            knapsack = new Knapsack();
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -36,13 +26,49 @@ namespace LPR381_Project
 
         private void btnLoad_Click_1(object sender, EventArgs e)
         {
-            string fileContent = fileHandler.ReadFile();
-            rtxDisplay.Text = fileContent;
+            string filepath = "input.txt"; 
+            fileHandler = new FileHandler(filepath);
+
+            try
+            {
+                fileHandler.StoreFileData();
+                rtxDisplay.Clear();
+                rtxDisplay.AppendText(fileHandler.ToString());
+            }
+            catch (Exception ex)
+            {
+                rtxDisplay.AppendText($"Error: {ex.Message}");
+            }
         }
 
         private void btnSolve_Click(object sender, EventArgs e)
         {
-            rtxDisplay.Text = fileHandler.ToString();
+            if (fileHandler == null)
+            {
+                MessageBox.Show("Please load the file first.");
+                return;
+            }
+
+            try
+            {
+                // Solve the knapsack problem
+                Knapsack knapsack = new Knapsack(
+                    fileHandler.ProblemType,
+                    fileHandler.ObjFunction,
+                    fileHandler.ConstraintsCoefficients,
+                    fileHandler.RhsConstraints,
+                    fileHandler.SignRestrictions
+                );
+
+                knapsack.Solve();
+
+                // You can display the knapsack solution in the richTextBoxOutput if needed
+                rtxDisplay.AppendText("\nKnapsack problem solved.");
+            }
+            catch (Exception ex)
+            {
+                rtxDisplay.AppendText($"\nError: {ex.Message}");
+            }
         }
     }
 }
