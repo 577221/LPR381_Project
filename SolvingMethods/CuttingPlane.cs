@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using Google.OrTools.LinearSolver;
+using System.Text.RegularExpressions;
 
 namespace LPR381_Project.SolvingMethods
 {
@@ -12,17 +13,18 @@ namespace LPR381_Project.SolvingMethods
     {
 
         public class Program
-        {
-            public static void Main(string[] args)
-            {
-                ModelInput input = null;
+{
+    public static void Main(string[] args)
+    {
+        ModelInput input = null;
 
         while (true)
         {
             Console.WriteLine("Gomory Cutting Plane Algorithm");
             Console.WriteLine("1. Load Model from File");
             Console.WriteLine("2. Solve Model");
-            Console.WriteLine("3. Exit");
+            Console.WriteLine("3. Add New Activity");
+            Console.WriteLine("4. Exit");
             Console.Write("Enter your choice: ");
             var choice = Console.ReadLine();
 
@@ -54,6 +56,22 @@ namespace LPR381_Project.SolvingMethods
             }
             else if (choice == "3")
             {
+                if (input == null)
+                {
+                    Console.WriteLine("Please load a model first.");
+                    continue;
+                }
+
+                Console.Write("Enter the coefficient of the new activity: ");
+                double newCoefficient = double.Parse(Console.ReadLine());
+                input.AddNewActivity(newCoefficient);
+
+                var solver = new SolverWrapper();
+                solver.Solve(input);
+                Console.WriteLine("New activity added and model re-solved. Results written to output.txt.");
+            }
+            else if (choice == "4")
+            {
                 break;
             }
             else
@@ -82,7 +100,7 @@ public class ModelInput
     private void ParseInputFile(string filePath)
     {
         var lines = File.ReadAllLines(filePath);
-        var firstLine = lines[0].Split(' ');
+        var firstLine = lines[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
         OptimizationType = firstLine[0];
         for (int i = 1; i < firstLine.Length; i += 2)
@@ -107,7 +125,7 @@ public class ModelInput
 
         for (int i = 1; i < lines.Length - 1; i++)
         {
-            var constraintParts = lines[i].Split(' ');
+            var constraintParts = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var constraint = new Constraint
             {
                 Coefficients = new List<double>(),
@@ -138,7 +156,18 @@ public class ModelInput
             Constraints.Add(constraint);
         }
 
-        SignRestrictions.AddRange(lines[^1].Split(' '));
+        SignRestrictions.AddRange(lines[^1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    public void AddNewActivity(double newCoefficient)
+    {
+        ObjectiveCoefficients.Add(newCoefficient);
+        foreach (var constraint in Constraints)
+        {
+            Console.Write($"Enter coefficient for the new activity in constraint with RHS : ");
+            double newConstraintCoefficient = double.Parse(Console.ReadLine());
+            constraint.Coefficients.Add(newConstraintCoefficient);
+        }
     }
 }
 
@@ -202,4 +231,5 @@ public class SolverWrapper
         }
     }
 }
+
     
