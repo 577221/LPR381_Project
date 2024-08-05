@@ -53,6 +53,7 @@
     <Compile Include="Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Sensitivity.cs" />
     <Compile Include="SolvingMethods\BranchAndBound.cs" />
     <Compile Include="SolvingMethods\CuttingPlane.cs" />
     <Compile Include="SolvingMethods\Knapsack.cs" />
