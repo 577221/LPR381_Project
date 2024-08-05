@@ -176,6 +176,7 @@
             this.btnKnapsack.TabIndex = 2;
             this.btnKnapsack.Text = "Knapsack";
             this.btnKnapsack.UseVisualStyleBackColor = true;
+            this.btnKnapsack.Click += new System.EventHandler(this.btnKnapsack_Click);
             // 
             // btnBranchAndBound
             // 
@@ -192,6 +193,8 @@
             this.pnlSensitivityInfo.Name = "pnlSensitivityInfo";
             this.pnlSensitivityInfo.Size = new System.Drawing.Size(596, 587);
             this.pnlSensitivityInfo.TabIndex = 13;
+            this.pnlSensitivityInfo.MouseLeave += new System.EventHandler(this.pnlSensitivityInfo_MouseLeave);
+            this.pnlSensitivityInfo.MouseHover += new System.EventHandler(this.pnlSensitivityInfo_MouseHover);
             // 
             // Main
             // 

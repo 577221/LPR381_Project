@@ -43,6 +43,21 @@ namespace LPR381_Project
 
         private void btnSolve_Click(object sender, EventArgs e)
         {
+            
+        }
+
+        private void btnBranchAndBound_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pnlSensitivity_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void btnKnapsack_Click(object sender, EventArgs e)
+        {
             if (fileHandler != null)
             {
                 Knapsack knapsack = new Knapsack(
@@ -62,14 +77,18 @@ namespace LPR381_Project
             }
         }
 
-        private void btnBranchAndBound_Click(object sender, EventArgs e)
+        private void pnlSensitivityInfo_MouseHover(object sender, EventArgs e)
         {
-
+            pnlButtons.Enabled = false;
+            pnlModel.Visible = false;
+            pnlSensitivity.Visible = true;
         }
 
-        private void pnlSensitivity_Paint(object sender, PaintEventArgs e)
+        private void pnlSensitivityInfo_MouseLeave(object sender, EventArgs e)
         {
-
+            pnlButtons.Enabled = true;
+            pnlModel.Visible = true;
+            pnlSensitivity.Visible = false;
         }
     }
 }
