@@ -66,5 +66,10 @@ namespace LPR381_Project
         {
 
         }
+
+        private void pnlSensitivity_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
