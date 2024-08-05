@@ -68,11 +68,18 @@ namespace LPR381_Project
 
         public void ParseConstraints(string fileContent)
         {
-            var lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.None);
-            int constraintStartLine = 3; // assuming constraints start after the third line
-            int constraintEndLine = lines.Length - 2; // assuming sign restrictions are on the last line
-            var constraintLines = lines.Skip(constraintStartLine).Take(constraintEndLine - constraintStartLine + 1).ToArray();
+            var lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            int constraintStartLine = 1; // constraints start after the first non-empty line
+            int constraintEndLine = lines.Length - 1; // sign restrictions are on the last non-empty line
+
+            var constraintLines = lines.Skip(constraintStartLine).Take(constraintEndLine - constraintStartLine).ToArray();
             int numConstraints = constraintLines.Length;
+
+            // Check if there are any constraints to parse
+            if (numConstraints == 0)
+            {
+                throw new InvalidOperationException("No constraints found in the file.");
+            }
 
             constraintsCoefficients = new int[numConstraints, ObjFunction.Length];
             rhsConstraints = new int[numConstraints];
@@ -80,12 +87,23 @@ namespace LPR381_Project
             for (int i = 0; i < numConstraints; i++)
             {
                 var constraintParts = constraintLines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                for (int j = 0; j < ObjFunction.Length; j++)
+                if (constraintParts.Length != ObjFunction.Length + 1)
                 {
-                    constraintsCoefficients[i, j] = int.Parse(constraintParts[j]);
+                    throw new InvalidOperationException("Mismatch between number of constraints and objective function elements.");
                 }
 
-                rhsConstraints[i] = int.Parse(constraintParts[constraintParts.Length - 1].Trim(new char[] { '<', '=', '>' }));
+                for (int j = 0; j < ObjFunction.Length; j++)
+                {
+                    if (!int.TryParse(constraintParts[j], out constraintsCoefficients[i, j]))
+                    {
+                        throw new InvalidOperationException($"Invalid constraint coefficient at line {constraintStartLine + i + 1}, position {j + 1}.");
+                    }
+                }
+
+                if (!int.TryParse(constraintParts[constraintParts.Length - 1].Trim(new char[] { '<', '=', '>' }), out rhsConstraints[i]))
+                {
+                    throw new InvalidOperationException($"Invalid RHS constraint at line {constraintStartLine + i + 1}, position {constraintParts.Length}.");
+                }
             }
         }
 
