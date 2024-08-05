@@ -69,7 +69,7 @@ namespace LPR381_Project
         public void ParseConstraints(string fileContent)
         {
             var lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.None);
-            int constraintStartLine = 1; // assuming constraints start after the first line
+            int constraintStartLine = 3; // assuming constraints start after the third line
             int constraintEndLine = lines.Length - 2; // assuming sign restrictions are on the last line
             var constraintLines = lines.Skip(constraintStartLine).Take(constraintEndLine - constraintStartLine + 1).ToArray();
             int numConstraints = constraintLines.Length;
