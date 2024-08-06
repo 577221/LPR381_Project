@@ -68,8 +68,10 @@ namespace LPR381_Project
                     fileHandler.SignRestrictions
                 );
 
-                string result = knapsack.Solve();
-                rtxDisplay.AppendText(result);
+                //string result = knapsack.Solve();
+                //rtxDisplay.AppendText(result);
+                string rankingTable = knapsack.RankingTable();
+                rtxDisplay.AppendText(rankingTable);
             }
             else
             {
