@@ -94,7 +94,10 @@ namespace LPR381_Project
                                 fileHandler.SignRestrictions);
 
                             string rankingTable = knapsack.RankingTable();
+                            string rankingEvaluation = knapsack.RankingEvaluation();
                             Console.WriteLine(rankingTable);
+                            Console.WriteLine();
+                            Console.WriteLine(rankingEvaluation);
                         }
                         catch (Exception ex)
                         {

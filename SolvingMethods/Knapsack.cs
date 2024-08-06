@@ -63,5 +63,12 @@ namespace LPR381_Project
             return sb.ToString();
         }
 
+        public string RankingEvaluation()
+        {
+            // Obtain the ranking table
+            string rankingTable = RankingTable();
+            
+            return rankingTable;
+        }
     }
 }
