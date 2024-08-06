@@ -34,16 +34,17 @@ namespace LPR381_Project
                 Console.WriteLine(ex.ToString());
             }
 
-            Console.WriteLine("Reading input.txt...");
-            Thread.Sleep(3000);
-            Console.WriteLine("IP / Model Received!\n");
-            Thread.Sleep(3000);
-            Console.WriteLine(fileHandler.ToString());
-
             bool Continue = true;
 
             while (Continue)
             {
+                Console.Clear();
+                Console.WriteLine("Reading input.txt...");
+                Thread.Sleep(3000);
+                Console.WriteLine("IP/LP Model Received!\n");
+                Thread.Sleep(3000);
+                Console.WriteLine(fileHandler.ToString());
+                Console.WriteLine();
                 Console.WriteLine("Please choose a algorithm to solve the IP/LP Model:");
                 Console.WriteLine("---------------------------------------------------");
                 Console.WriteLine("1. Primal Simplex");
@@ -53,6 +54,7 @@ namespace LPR381_Project
                 Console.WriteLine("5. Branch & Bound Knapsack");
                 Console.WriteLine();
                 Console.WriteLine("Please enter 1, 2, 3, 4 or 5:");
+
                 int choice = int.Parse(Console.ReadLine());
 
                 switch ((Menu)choice)
