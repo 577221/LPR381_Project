@@ -36,15 +36,17 @@ namespace LPR381_Project
 
             bool Continue = true;
 
+            Console.Clear();
+            Console.WriteLine("Reading input.txt...");
+            Thread.Sleep(3000);
+            Console.WriteLine("IP/LP Model Received!\n");
+            Thread.Sleep(3000);
+            Console.WriteLine(fileHandler.ToString());
+            Console.WriteLine();
+
             while (Continue)
             {
-                Console.Clear();
-                Console.WriteLine("Reading input.txt...");
-                Thread.Sleep(3000);
-                Console.WriteLine("IP/LP Model Received!\n");
-                Thread.Sleep(3000);
-                Console.WriteLine(fileHandler.ToString());
-                Console.WriteLine();
+                
                 Console.WriteLine("Please choose a algorithm to solve the IP/LP Model:");
                 Console.WriteLine("---------------------------------------------------");
                 Console.WriteLine("1. Primal Simplex");

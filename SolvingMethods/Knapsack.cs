@@ -29,7 +29,8 @@ namespace LPR381_Project
 
         public string RankingTable()
         {
-            List<(double Fraction, double Value, int Rank)> rankings = new List<(double Fraction, double Value, int Rank)>();
+            // List to store fractions, values, positions, and ranks
+            List<(string Fraction, double Value, int Rank, int Row, int Column)> rankings = new List<(string Fraction, double Value, int Rank, int Row, int Column)>();
             int numConstraints = constraintsCoefficients.GetLength(0);
             int numVariables = constraintsCoefficients.GetLength(1);
 
@@ -38,29 +39,29 @@ namespace LPR381_Project
             {
                 for (int j = 0; j < numVariables; j++)
                 {
-                    double fraction = (double)constraintsCoefficients[i, j] / objFunction[j];
-                    double value = fraction * rhsConstraints[i];
-                    rankings.Add((fraction, value, 0));
+                    double fraction = (double)objFunction[j] / constraintsCoefficients[i, j];
+                    rankings.Add(($"{constraintsCoefficients[i, j]}/{objFunction[j]}", fraction, 0, i, j));
                 }
             }
 
-            // Sort by value and assign ranks
-            rankings.Sort((x, y) => y.Value.CompareTo(x.Value));
+            // Sort by value (fraction) and assign ranks
+            rankings = rankings.OrderByDescending(x => x.Value).ToList();
             for (int i = 0; i < rankings.Count; i++)
             {
-                rankings[i] = (rankings[i].Fraction, rankings[i].Value, i + 1);
+                rankings[i] = (rankings[i].Fraction, rankings[i].Value, i + 1, rankings[i].Row, rankings[i].Column);
             }
 
             // Create string representation of the ranking table
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.AppendLine("Ranking Table:");
-            sb.AppendLine("Fraction\tValue\tRank");
+            sb.AppendLine("Variable\tFraction\tValue\tRank");
             foreach (var item in rankings)
             {
-                sb.AppendLine($"{item.Fraction}\t{item.Value}\t{item.Rank}");
+                sb.AppendLine($"x{item.Column+1}\t{item.Fraction}\t{item.Value:F2}\t{item.Rank}");
             }
 
             return sb.ToString();
         }
+
     }
 }
