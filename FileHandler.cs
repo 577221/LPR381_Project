@@ -128,8 +128,8 @@ namespace LPR381_Project
 
             return $"IP Model Values:\n" +
                    $"- - - - - - - - - - - - - - -\n" +
-                   $"Problem Type: {ProblemType}\n" +
-                   $"Objective Function: {string.Join(" ", ObjFunction)}\n" +
+                   $"Problem Type: {ProblemType}\n \n" +
+                   $"Objective Function: {string.Join(" ", ObjFunction)}\n \n" +
                    $"Constraints:\n{constraintsStr}\n" +
                    $"Sign Restrictions: {string.Join(" ", SignRestrictions)}\n";
         }
