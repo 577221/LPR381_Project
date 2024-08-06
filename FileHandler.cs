@@ -41,11 +41,7 @@ namespace LPR381_Project
         // Function that parses and stores data from the text file
         public void StoreFileData()
         {
-            string fileContent = ReadFile();
-            if (fileContent == null)
-            {
-                throw new InvalidOperationException("Error reading file.");
-            }
+            string fileContent = ReadFile() ?? throw new InvalidOperationException("Error reading file.");
             ParseObjFunction(fileContent);
             ParseConstraints(fileContent);
             ParseSignRestrictions(fileContent);
@@ -127,7 +123,7 @@ namespace LPR381_Project
             }
 
             return $"IP Model Values:\n" +
-                   $"- - - - - - - - - - - - - - -\n" +
+                   $"----------------\n" +
                    $"Problem Type: {ProblemType}\n \n" +
                    $"Objective Function: {string.Join(" ", ObjFunction)}\n \n" +
                    $"Constraints:\n{constraintsStr}\n" +
