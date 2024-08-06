@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Duality.cs" />
     <Compile Include="FileHandler.cs" />
     <Compile Include="Sensitivity.cs" />
     <Compile Include="SolvingMethods\BranchAndBound.cs" />
