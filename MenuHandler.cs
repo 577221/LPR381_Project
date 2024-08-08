@@ -83,7 +83,7 @@ namespace LPR381_Project
                 case Menu.CuttingPlane:
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
-                    try
+                    /*try
                     {
                         Console.Write("Enter file path: ");
                         var filePath = Console.ReadLine();
@@ -97,7 +97,7 @@ namespace LPR381_Project
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    }*/
                     break;
 
 
@@ -113,11 +113,17 @@ namespace LPR381_Project
                             fileHandler.RhsConstraints,
                             fileHandler.SignRestrictions);
 
+                        // Execute the Ranking Table and Evaluation
                         string rankingTable = knapsack.RankingTable();
                         string rankingEvaluation = knapsack.RankingEvaluation();
+                        string iterations = knapsack.Iterations();
+
+                        // Display the results
                         Console.WriteLine(rankingTable);
                         Console.WriteLine();
                         Console.WriteLine(rankingEvaluation);
+                        Console.WriteLine();
+                        Console.WriteLine(iterations);
                     }
                     catch (Exception ex)
                     {

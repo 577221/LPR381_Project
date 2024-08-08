@@ -121,5 +121,10 @@ namespace LPR381_Project
 
             return sb.ToString();
         }
+
+        public string Iterations()
+        {
+            return "in progress";
+        }
     }
 }
