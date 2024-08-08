@@ -83,7 +83,7 @@ namespace LPR381_Project
                 case Menu.CuttingPlane:
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
-                    /*try
+                    try
                     {
                         Console.Write("Enter file path: ");
                         var filePath = Console.ReadLine();
@@ -97,7 +97,7 @@ namespace LPR381_Project
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
-                    }*/
+                    }
                     break;
 
 
