@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,12 +7,7 @@ using System.IO;
 using Google.OrTools.LinearSolver;
 using System.Text.RegularExpressions;
 
-namespace LPR381_Project.SolvingMethods
-{
-    internal class CuttingPlane
-    {
-
-        public class Program
+public class Program
 {
     public static void Main(string[] args)
     {
@@ -230,6 +225,6 @@ public class SolverWrapper
             }
         }
     }
-}*/
+}
 
     
