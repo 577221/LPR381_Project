@@ -83,8 +83,23 @@ namespace LPR381_Project
                 case Menu.CuttingPlane:
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
+                    try
+                    {
+                        Console.Write("Enter file path: ");
+                        var filePath = Console.ReadLine();
+                        var input = new ModelInput(filePath);
+                        Console.WriteLine("Model loaded successfully.");
 
+                        var solver = new SolverWrapper();
+                        solver.Solve(input);
+                        Console.WriteLine("Model solved. Results written to output.txt.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
                     break;
+
 
                 case Menu.Knapsack:
                     Console.WriteLine("Branch & Bound Knapsack:");
