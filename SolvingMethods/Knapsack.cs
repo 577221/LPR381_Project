@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
+using System.Text;
 
 namespace LPR381_Project
 {
@@ -32,7 +34,7 @@ namespace LPR381_Project
         public string RankingTable()
         {
             rankingsData.Clear(); // Clear previous data
-            List<(double Fraction, double Value, int Rank, int Row, int Column)> rankings = new List<(double Fraction, double Value, int Rank, int Row, int Column)>();
+            List<(int Numerator, int Denominator, double Value, int Rank, int Row, int Column)> rankings = new List<(int Numerator, int Denominator, double Value, int Rank, int Row, int Column)>();
             int numConstraints = constraintsCoefficients.GetLength(0);
             int numVariables = constraintsCoefficients.GetLength(1);
 
@@ -41,9 +43,10 @@ namespace LPR381_Project
             {
                 for (int j = 0; j < numVariables; j++)
                 {
-                    double fraction = (double)objFunction[j] / constraintsCoefficients[i, j];
-                    double value = fraction; // Value based on fraction only
-                    rankings.Add((fraction, value, 0, i, j));
+                    int numerator = objFunction[j];
+                    int denominator = constraintsCoefficients[i, j];
+                    double value = (double)numerator / denominator; // Value based on fraction only
+                    rankings.Add((numerator, denominator, value, 0, i, j));
                 }
             }
 
@@ -52,8 +55,8 @@ namespace LPR381_Project
             for (int i = 0; i < rankings.Count; i++)
             {
                 var item = rankings[i];
-                rankings[i] = (item.Fraction, item.Value, i + 1, item.Row, item.Column);
-                rankingsData.Add((item.Column, item.Row, constraintsCoefficients[item.Row, item.Column], item.Fraction, item.Value, i + 1));
+                rankings[i] = (item.Numerator, item.Denominator, item.Value, i + 1, item.Row, item.Column);
+                rankingsData.Add((item.Column, item.Row, constraintsCoefficients[item.Row, item.Column], (double)item.Numerator / item.Denominator, item.Value, i + 1));
             }
 
             // Create string representation of the ranking table
@@ -62,7 +65,8 @@ namespace LPR381_Project
             sb.AppendLine("Variable\tFraction\tValue\tRank");
             foreach (var item in rankings)
             {
-                sb.AppendLine($"x{item.Column + 1}\t{item.Fraction}\t{item.Value:F2}\t{item.Rank}");
+                string fraction = $"{item.Numerator}/{item.Denominator}";
+                sb.AppendLine($"x{item.Column + 1}\t{fraction}\t{item.Value:F2}\t{item.Rank}");
             }
 
             return sb.ToString();
