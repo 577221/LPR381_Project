@@ -126,9 +126,115 @@ namespace LPR381_Project
             return sb.ToString();
         }
 
-        public string Iterations()
+        public string GenerateKnapsackSolution()
         {
-            return "in progress";
+            StringBuilder sb = new StringBuilder();
+
+            // Start with the initial sub-problem (SP1)
+            EvaluateSubProblem(sb, new Dictionary<int, int>(), initialRanking, "SP1", initialRHS, 1);
+
+            return sb.ToString();
+        }
+
+        private void EvaluateSubProblem(StringBuilder sb, Dictionary<int, int> assignment, List<int> ranking, string label, int[] rhs, int depth)
+        {
+            // Print current sub-problem
+            PrintSubProblem(sb, assignment, ranking, label, rhs, depth);
+
+            // Check if this sub-problem is feasible or should branch further
+            bool feasible = true; // Determine feasibility based on RHS
+            double zValue = 0; // Calculate Z-value
+
+            if (feasible)
+            {
+                // Evaluate next variable based on current ranking
+                int nextVar = ranking.FirstOrDefault(var => !assignment.ContainsKey(var));
+
+                if (nextVar > 0)
+                {
+                    // Create new sub-problems by setting nextVar to 0 and 1
+                    var zeroAssignment = new Dictionary<int, int>(assignment) { [nextVar] = 0 };
+                    var oneAssignment = new Dictionary<int, int>(assignment) { [nextVar] = 1 };
+
+                    var newRanking = UpdateRanking(ranking, nextVar);
+
+                    // Recursively evaluate these new sub-problems
+                    EvaluateSubProblem(sb, zeroAssignment, newRanking, $"{label}.1", UpdateRHS(rhs, zeroAssignment), depth + 1);
+                    EvaluateSubProblem(sb, oneAssignment, newRanking, $"{label}.2", UpdateRHS(rhs, oneAssignment), depth + 1);
+                }
+                else
+                {
+                    // If no more variables to branch on, finalize the solution
+                    sb.AppendLine($"Candidate: Z = {zValue}");
+                }
+            }
+            else
+            {
+                sb.AppendLine("Infeasible");
+            }
+        }
+
+        private void PrintSubProblem(StringBuilder sb, Dictionary<int, int> assignment, List<int> ranking, string label, int[] rhs, int depth)
+        {
+            // Print sub-problem label, variable assignments, RHS, feasibility, and Z-value
+            sb.AppendLine($"{label}:");
+            // Print headers dynamically based on ranking
+            sb.Append("Variable    ");
+            foreach (var varIndex in ranking)
+            {
+                sb.Append($"x{varIndex}    ");
+            }
+            sb.AppendLine("New RHS");
+
+            // Print assigned values
+            sb.Append("Assigned    ");
+            foreach (var varIndex in ranking)
+            {
+                if (assignment.ContainsKey(varIndex))
+                {
+                    sb.Append($"{assignment[varIndex]}    ");
+                }
+                else
+                {
+                    sb.Append("     "); // Space for unassigned variables
+                }
+            }
+
+            // Calculate and print new RHS values
+            sb.AppendLine(string.Join("    ", rhs));
+
+            // Feasibility and Z-value
+            bool feasible = rhs.All(val => val >= 0);
+            double zValue = assignment.Where(kv => kv.Value == 1).Sum(kv => coefficients[kv.Key]);
+
+            sb.AppendLine($"Feasible: {(feasible ? "Yes" : "No")}");
+            sb.AppendLine($"Z Value: {zValue.ToString("F2")}");
+            sb.AppendLine("--------------------------------------------------");
+        }
+
+        private List<int> UpdateRanking(List<int> currentRanking, int cutVar)
+        {
+            // Move the cut variable to the front of the ranking
+            var newRanking = new List<int> { cutVar };
+            newRanking.AddRange(currentRanking.Where(varIndex => varIndex != cutVar));
+            return newRanking;
+        }
+
+        private int[] UpdateRHS(int[] currentRHS, Dictionary<int, int> assignment)
+        {
+            // Update RHS based on the current variable assignment
+            int[] newRHS = (int[])currentRHS.Clone();
+            foreach (var kv in assignment)
+            {
+                if (kv.Value == 1)
+                {
+                    // Subtract corresponding coefficients if variable is set to 1
+                    newRHS = newRHS.Zip(coefficients[kv.Key], (rhsVal, coef) => rhsVal - coef).ToArray();
+                }
+            }
+            return newRHS;
         }
     }
 }
+
+
