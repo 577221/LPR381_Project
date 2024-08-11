@@ -21,7 +21,14 @@ namespace LPR381_Project
             RevisedSimplex,
             BranchAndBound,
             CuttingPlane,
-            Knapsack
+            Knapsack,
+            Other
+        }
+
+        private enum SubMenu
+        {
+            Sensitivity = 1,
+            Duality
         }
 
         public void ShowMenu()
@@ -37,13 +44,14 @@ namespace LPR381_Project
                 Console.WriteLine("3. Branch & Bound Simplex");
                 Console.WriteLine("4. Cutting Plane Simplex");
                 Console.WriteLine("5. Branch & Bound Knapsack");
+                Console.WriteLine("6. Other");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1, 2, 3, 4 or 5:");
+                Console.WriteLine("Please enter 1, 2, 3, 4, 5 or 6:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
-                if (!validChoice || choice < 1 || choice > 5)
+                if (!validChoice || choice < 1 || choice > 6)
                 {
                     Console.WriteLine("Invalid choice. Please enter a number between 1 and 5.");
                     continue;
@@ -65,10 +73,6 @@ namespace LPR381_Project
                 case Menu.PrimalSimplex:
                     Console.WriteLine("Primal Simplex:");
                     Console.WriteLine("---------------");
-
-                    Duality duality = new Duality(model);
-
-                    Console.WriteLine(duality.PrimalTable());
 
                     break;
 
@@ -131,6 +135,61 @@ namespace LPR381_Project
                     {
                         Console.WriteLine($"Error: {ex.Message}");
                     }
+                    break;
+
+                case Menu.Other:
+                    ShowOtherMenu();
+                    break;
+            }
+
+
+        }
+
+        private void ShowOtherMenu()
+        {
+            bool continueLoop = true;
+
+            while (continueLoop)
+            {
+                Console.WriteLine("Please choose what you would like to perform/apply on the IP/LP Model:");
+                Console.WriteLine("----------------------------------------------------------------------");
+                Console.WriteLine("1. Sensitivity Analysis");
+                Console.WriteLine("2. Duality");
+                Console.WriteLine();
+                Console.WriteLine("Please enter 1 or 2:");
+
+                int choice;
+                bool validChoice = int.TryParse(Console.ReadLine(), out choice);
+
+                if (!validChoice || choice < 1 || choice > 2)
+                {
+                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                    continue;
+                }
+
+                ExecuteOtherMenuChoice((SubMenu)choice);
+                Console.WriteLine();
+                Console.WriteLine("Press 'Q' to return to the main menu or any other key to continue...");
+                var key = Console.ReadKey(true);
+                continueLoop = key.KeyChar != 'Q' && key.KeyChar != 'q';
+                Console.Clear();
+            }
+        }
+
+        private void ExecuteOtherMenuChoice(SubMenu choice)
+        {
+            switch (choice)
+            {
+                case SubMenu.Sensitivity:
+                    Console.WriteLine("Sensitivity Analysis");
+                    Console.WriteLine("--------------------");
+
+                    break;
+
+                case SubMenu.Duality:
+                    Console.WriteLine("Duality:");
+                    Console.WriteLine("--------");
+
                     break;
             }
         }
