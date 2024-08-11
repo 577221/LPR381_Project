@@ -125,12 +125,17 @@ namespace LPR381_Project
                         // Execute the Ranking Table and Evaluation
                         string rankingTable = knapsack.RankingTable();
                         string rankingEvaluation = knapsack.RankingEvaluation();
+                        string generateSubProblems = knapsack.GenerateSubProblems();
+                        string bestSolution = knapsack.FindBestSolution();
 
                         // Display the results
                         Console.WriteLine(rankingTable);
                         Console.WriteLine();
                         Console.WriteLine(rankingEvaluation);
                         Console.WriteLine();
+                        Console.WriteLine(generateSubProblems);
+                        Console.WriteLine();
+                        Console.WriteLine(bestSolution);
                     }
                     catch (Exception ex)
                     {

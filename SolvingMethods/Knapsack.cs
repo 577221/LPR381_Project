@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.Linq;
-using System.Text;
 
 namespace LPR381_Project
 {
@@ -126,115 +124,124 @@ namespace LPR381_Project
             return sb.ToString();
         }
 
-        /*public string GenerateKnapsackSolution()
+        public string GenerateSubProblems()
         {
-            StringBuilder sb = new StringBuilder();
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.AppendLine("Sub-Problems:");
 
-            // Start with the initial sub-problem (SP1)
-            EvaluateSubProblem(sb, new Dictionary<int, int>(), initialRanking, "SP1", initialRHS, 1);
+            int numVariables = constraintsCoefficients.GetLength(1);
+            int numSubProblems = (int)Math.Pow(2, numVariables); // 2^n sub-problems for n variables
+
+            for (int i = 0; i < numSubProblems; i++)
+            {
+                int[] variableValues = new int[numVariables];
+                int[] newRhsConstraints = (int[])rhsConstraints.Clone();
+                double zValue = 0;
+
+                for (int j = 0; j < numVariables; j++)
+                {
+                    if ((i & (1 << j)) != 0) // If the j-th bit is set
+                    {
+                        variableValues[j] = 1;
+                        zValue += objFunction[j];
+                        for (int k = 0; k < constraintsCoefficients.GetLength(0); k++)
+                        {
+                            if (constraintsCoefficients[k, j] > 0) // Ensure the coefficient is non-negative
+                            {
+                                newRhsConstraints[k] -= constraintsCoefficients[k, j];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        variableValues[j] = 0;
+                    }
+                }
+
+                bool isFeasible = newRhsConstraints.All(r => r >= 0);
+
+                if (!isFeasible)
+                {
+                    zValue = 0; // Set zValue to 0 if the sub-problem is infeasible
+                }
+
+                sb.AppendLine($"Sub-Problem {i + 1}:");
+                sb.AppendLine("Variable\tAssigned Value\tNew RHS");
+
+                // Print variable values and new RHS values for constraints
+                for (int j = 0; j < numVariables; j++)
+                {
+                    sb.Append($"x{j + 1}\t{variableValues[j]}\t");
+
+                    // Display new RHS for each constraint after variable changes
+                    for (int k = 0; k < constraintsCoefficients.GetLength(0); k++)
+                    {
+                        sb.Append($"{newRhsConstraints[k]}");
+                    }
+
+                    sb.AppendLine();
+                }
+
+                sb.AppendLine($"Feasibility: {(isFeasible ? "Yes" : "No")}");
+                sb.AppendLine($"Objective Value (z): {zValue:F2}");
+                sb.AppendLine();
+            }
 
             return sb.ToString();
         }
 
-        private void EvaluateSubProblem(StringBuilder sb, Dictionary<int, int> assignment, List<int> ranking, string label, int[] rhs, int depth)
+        public string FindBestSolution()
         {
-            // Print current sub-problem
-            PrintSubProblem(sb, assignment, ranking, label, rhs, depth);
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            double bestValue = 0; // Initialize to 0 since infeasible solutions should have zValue as 0
+            int[] bestSolution = new int[objFunction.Length];
 
-            // Check if this sub-problem is feasible or should branch further
-            bool feasible = true; // Determine feasibility based on RHS
-            double zValue = 0; // Calculate Z-value
+            int numVariables = constraintsCoefficients.GetLength(1);
+            int numSubProblems = (int)Math.Pow(2, numVariables); // 2^n sub-problems for n variables
 
-            if (feasible)
+            for (int i = 0; i < numSubProblems; i++)
             {
-                // Evaluate next variable based on current ranking
-                int nextVar = ranking.FirstOrDefault(var => !assignment.ContainsKey(var));
+                int[] variableValues = new int[numVariables];
+                int[] newRhsConstraints = (int[])rhsConstraints.Clone();
+                double zValue = 0;
 
-                if (nextVar > 0)
+                for (int j = 0; j < numVariables; j++)
                 {
-                    // Create new sub-problems by setting nextVar to 0 and 1
-                    var zeroAssignment = new Dictionary<int, int>(assignment) { [nextVar] = 0 };
-                    var oneAssignment = new Dictionary<int, int>(assignment) { [nextVar] = 1 };
-
-                    var newRanking = UpdateRanking(ranking, nextVar);
-
-                    // Recursively evaluate these new sub-problems
-                    EvaluateSubProblem(sb, zeroAssignment, newRanking, $"{label}.1", UpdateRHS(rhs, zeroAssignment), depth + 1);
-                    EvaluateSubProblem(sb, oneAssignment, newRanking, $"{label}.2", UpdateRHS(rhs, oneAssignment), depth + 1);
+                    if ((i & (1 << j)) != 0) // If the j-th bit is set
+                    {
+                        variableValues[j] = 1;
+                        zValue += objFunction[j];
+                        for (int k = 0; k < constraintsCoefficients.GetLength(0); k++)
+                        {
+                            if (constraintsCoefficients[k, j] > 0) // Ensure the coefficient is non-negative
+                            {
+                                newRhsConstraints[k] -= constraintsCoefficients[k, j];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        variableValues[j] = 0;
+                    }
                 }
-                else
+
+                bool isFeasible = newRhsConstraints.All(r => r >= 0);
+
+                if (isFeasible && zValue > bestValue)
                 {
-                    // If no more variables to branch on, finalize the solution
-                    sb.AppendLine($"Candidate: Z = {zValue}");
+                    bestValue = zValue;
+                    Array.Copy(variableValues, bestSolution, numVariables);
                 }
             }
-            else
+
+            sb.AppendLine("Best Solution:");
+            for (int i = 0; i < bestSolution.Length; i++)
             {
-                sb.AppendLine("Infeasible");
+                sb.AppendLine($"x{i + 1}\t{bestSolution[i]}");
             }
+            sb.AppendLine($"Objective Value (z): {bestValue:F2}");
+
+            return sb.ToString();
         }
-
-        private void PrintSubProblem(StringBuilder sb, Dictionary<int, int> assignment, List<int> ranking, string label, int[] rhs, int depth)
-        {
-            // Print sub-problem label, variable assignments, RHS, feasibility, and Z-value
-            sb.AppendLine($"{label}:");
-            // Print headers dynamically based on ranking
-            sb.Append("Variable    ");
-            foreach (var varIndex in ranking)
-            {
-                sb.Append($"x{varIndex}    ");
-            }
-            sb.AppendLine("New RHS");
-
-            // Print assigned values
-            sb.Append("Assigned    ");
-            foreach (var varIndex in ranking)
-            {
-                if (assignment.ContainsKey(varIndex))
-                {
-                    sb.Append($"{assignment[varIndex]}    ");
-                }
-                else
-                {
-                    sb.Append("     "); // Space for unassigned variables
-                }
-            }
-
-            // Calculate and print new RHS values
-            sb.AppendLine(string.Join("    ", rhs));
-
-            // Feasibility and Z-value
-            bool feasible = rhs.All(val => val >= 0);
-            double zValue = assignment.Where(kv => kv.Value == 1).Sum(kv => coefficients[kv.Key]);
-
-            sb.AppendLine($"Feasible: {(feasible ? "Yes" : "No")}");
-            sb.AppendLine($"Z Value: {zValue.ToString("F2")}");
-            sb.AppendLine("--------------------------------------------------");
-        }
-
-        private List<int> UpdateRanking(List<int> currentRanking, int cutVar)
-        {
-            // Move the cut variable to the front of the ranking
-            var newRanking = new List<int> { cutVar };
-            newRanking.AddRange(currentRanking.Where(varIndex => varIndex != cutVar));
-            return newRanking;
-        }
-
-        private int[] UpdateRHS(int[] currentRHS, Dictionary<int, int> assignment)
-        {
-            // Update RHS based on the current variable assignment
-            int[] newRHS = (int[])currentRHS.Clone();
-            foreach (var kv in assignment)
-            {
-                if (kv.Value == 1)
-                {
-                    // Subtract corresponding coefficients if variable is set to 1
-                    newRHS = newRHS.Zip(coefficients[kv.Key], (rhsVal, coef) => rhsVal - coef).ToArray();
-                }
-            }
-            return newRHS;
-        }*/
     }
 }
-
-
