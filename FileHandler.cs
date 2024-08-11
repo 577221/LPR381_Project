@@ -100,17 +100,16 @@ namespace LPR381_Project
                     }
                 }
 
-               
-                
+                // Parse the sign before the RHS value
+                ConstraintSign[i] = constraintParts[ObjFunction.Length]; // This captures the sign from the constraint
 
-                // Parse the RHS constraint
+                // Parse the RHS constraint value
                 if (!int.TryParse(constraintParts[ObjFunction.Length + 1], out RhsConstraints[i]))
                 {
                     throw new InvalidOperationException($"Invalid RHS constraint at line {constraintStartLine + i + 1}, position {constraintParts.Length}.");
                 }
             }
         }
-
 
         public void ParseSignRestrictions(string fileContent)
         {
@@ -121,24 +120,36 @@ namespace LPR381_Project
 
         public override string ToString()
         {
-            // Build the constraints string with sign restrictions
-            StringBuilder constraintsStr = new StringBuilder();
-            for (int i = 0; i < ConstraintsCoefficients.GetLength(0); i++)
+            // Initialize an empty string for constraints representation
+            string constraintsStr = "";
+
+            // Check if ConstraintsCoefficients and RhsConstraints are initialized
+            if (ConstraintsCoefficients != null && RhsConstraints != null && ConstraintSign != null)
             {
-                for (int j = 0; j < ConstraintsCoefficients.GetLength(1); j++)
+                for (int i = 0; i < ConstraintsCoefficients.GetLength(0); i++)
                 {
-                    constraintsStr.Append(ConstraintsCoefficients[i, j] + " ");
+                    for (int j = 0; j < ConstraintsCoefficients.GetLength(1); j++)
+                    {
+                        constraintsStr += ConstraintsCoefficients[i, j] + " ";
+                    }
+
+                    // Append the sign and RHS value
+                    constraintsStr += $"{ConstraintSign[i]} {RhsConstraints[i]}\n";
                 }
-                constraintsStr.Append(ConstraintSign[i] + " " + RhsConstraints[i] + "\n");
+            }
+            else
+            {
+                constraintsStr = "Constraints data is not available.";
             }
 
-            // Build the full string representation
+            // Return the formatted string with null checks for ObjFunction and SignRestrictions
             return $"IP Model Values:\n" +
                    $"----------------\n" +
-                   $"Problem Type: {ProblemType}\n\n" +
-                   $"Objective Function: {string.Join(" ", ObjFunction)}\n\n" +
+                   $"Problem Type: {ProblemType ?? "N/A"}\n\n" +
+                   $"Objective Function: {(ObjFunction != null ? string.Join(" ", ObjFunction) : "N/A")}\n\n" +
                    $"Constraints:\n{constraintsStr}\n" +
-                   $"Sign Restrictions: {string.Join(" ", SignRestrictions)}\n";
+                   $"Sign Restrictions: {(SignRestrictions != null ? string.Join(" ", SignRestrictions) : "N/A")}\n";
         }
+
     }
 }
