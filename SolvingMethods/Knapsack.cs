@@ -60,11 +60,11 @@ namespace LPR381_Project
             // Create string representation of the ranking table
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.AppendLine("Ranking Table:");
-            sb.AppendLine("Variable\tFraction\tValue\tRank");
+            sb.AppendLine("Variable".PadRight(15) + "Fraction".PadRight(15) + "Value".PadRight(15) + "Rank".PadRight(5));
             foreach (var item in rankings)
             {
                 string fraction = $"{item.Numerator}/{item.Denominator}";
-                sb.AppendLine($"x{item.Column + 1}\t{fraction}\t{item.Value:F2}\t{item.Rank}");
+                sb.AppendLine($"x{item.Column + 1}".PadRight(15) + fraction.PadRight(15) + $"{item.Value:F2}".PadRight(15) + $"{item.Rank}".PadRight(5));
             }
 
             return sb.ToString();
@@ -75,7 +75,7 @@ namespace LPR381_Project
             // Initialize StringBuilder for output
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
             sb.AppendLine("Sub-Problem 0:");
-            sb.AppendLine("Variable\tSmallerThanRHS\t0/1\tNew RHS");
+            sb.AppendLine("Variable".PadRight(15) + "SmallerThanRHS".PadRight(15) + "0/1".PadRight(5) + "New RHS".PadRight(20));
 
             // Create a copy of rhsConstraints to modify during evaluation
             int[] modifiedRhsConstraints = (int[])rhsConstraints.Clone();
@@ -92,7 +92,7 @@ namespace LPR381_Project
 
                     if (cutFlag)
                     {
-                        sb.AppendLine($"x{variableIndex + 1}\tNo\t0\t0");
+                        sb.AppendLine($"x{variableIndex + 1}".PadRight(15) + "No".PadRight(15) + "0".PadRight(5) + "0".PadRight(20));
                         continue;
                     }
 
@@ -107,12 +107,12 @@ namespace LPR381_Project
                     else
                     {
                         cutFlag = true;
-                        sb.AppendLine($"x{variableIndex + 1}\tNo\t0\t{modifiedRhsConstraints[constraintIndex]}/{originalCoefficient} (cut)");
+                        sb.AppendLine($"x{variableIndex + 1}".PadRight(15) + "No".PadRight(15) + "0".PadRight(5) + $"{modifiedRhsConstraints[constraintIndex]}/{originalCoefficient} (cut)".PadRight(20));
                         continue;
                     }
 
                     // Append results to the output
-                    sb.AppendLine($"x{variableIndex + 1}\t{(isSmaller ? "Yes" : "No")}\t{flag}\t{modifiedRhsConstraints[constraintIndex]}");
+                    sb.AppendLine($"x{variableIndex + 1}".PadRight(15) + (isSmaller ? "Yes" : "No").PadRight(15) + $"{flag}".PadRight(5) + $"{modifiedRhsConstraints[constraintIndex]}".PadRight(20));
                 }
                 catch (Exception ex)
                 {
@@ -166,17 +166,17 @@ namespace LPR381_Project
                 }
 
                 sb.AppendLine($"Sub-Problem {i + 1}:");
-                sb.AppendLine("Variable\tAssigned Value\tNew RHS");
+                sb.AppendLine("Variable".PadRight(15) + "Assigned Value".PadRight(15) + "New RHS".PadRight(10));
 
                 // Print variable values and new RHS values for constraints
                 for (int j = 0; j < numVariables; j++)
                 {
-                    sb.Append($"x{j + 1}\t{variableValues[j]}\t");
+                    sb.Append($"x{j + 1}".PadRight(15) + $"{variableValues[j]}".PadRight(15));
 
                     // Display new RHS for each constraint after variable changes
                     for (int k = 0; k < constraintsCoefficients.GetLength(0); k++)
                     {
-                        sb.Append($"{newRhsConstraints[k]}");
+                        sb.Append($"{newRhsConstraints[k]}".PadRight(10));
                     }
 
                     sb.AppendLine();
@@ -235,9 +235,10 @@ namespace LPR381_Project
             }
 
             sb.AppendLine("Best Solution:");
+            sb.AppendLine("Variable".PadRight(15) + "Assigned Value".PadRight(15));
             for (int i = 0; i < bestSolution.Length; i++)
             {
-                sb.AppendLine($"x{i + 1}\t{bestSolution[i]}");
+                sb.AppendLine($"x{i + 1}".PadRight(15) + $"{bestSolution[i]}".PadRight(15));
             }
             sb.AppendLine($"Objective Value (z): {bestValue:F2}");
 

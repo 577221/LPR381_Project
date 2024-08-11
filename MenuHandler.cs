@@ -72,6 +72,7 @@ namespace LPR381_Project
             switch (choice)
             {
                 case Menu.PrimalSimplex:
+                    Console.WriteLine();
                     Console.WriteLine("Primal Simplex:");
                     Console.WriteLine("---------------");
 
@@ -88,18 +89,21 @@ namespace LPR381_Project
                     break;
 
                 case Menu.RevisedSimplex:
+                    Console.WriteLine();
                     Console.WriteLine("Revised Primal Simplex:");
                     Console.WriteLine("-----------------------");
 
                     break;
 
                 case Menu.BranchAndBound:
+                    Console.WriteLine();
                     Console.WriteLine("Branch & Bound Simplex:");
                     Console.WriteLine("-----------------------");
 
                     break;
 
                 case Menu.CuttingPlane:
+                    Console.WriteLine();
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
                     /*try
@@ -121,6 +125,7 @@ namespace LPR381_Project
 
 
                 case Menu.Knapsack:
+                    Console.WriteLine();
                     Console.WriteLine("Branch & Bound Knapsack:");
                     Console.WriteLine("------------------------");
                     try
