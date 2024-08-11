@@ -151,6 +151,7 @@ namespace LPR381_Project
 
             while (continueLoop)
             {
+                Console.WriteLine();
                 Console.WriteLine("Please choose what you would like to perform/apply on the IP/LP Model:");
                 Console.WriteLine("----------------------------------------------------------------------");
                 Console.WriteLine("1. Sensitivity Analysis");
