@@ -66,6 +66,15 @@ namespace LPR381_Project
                     Console.WriteLine("Primal Simplex:");
                     Console.WriteLine("---------------");
 
+                    Duality duality = new Duality(
+                        fileHandler.ProblemType,
+                        fileHandler.ObjFunction,
+                        fileHandler.ConstraintsCoefficients,
+                        fileHandler.RhsConstraints,
+                        fileHandler.SignRestrictions);
+
+                    Console.WriteLine(duality.PrimalTable());
+
                     break;
 
                 case Menu.RevisedSimplex:
@@ -83,7 +92,7 @@ namespace LPR381_Project
                 case Menu.CuttingPlane:
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
-                    try
+                    /*try
                     {
                         Console.Write("Enter file path: ");
                         var filePath = Console.ReadLine();
@@ -97,7 +106,7 @@ namespace LPR381_Project
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
-                    }
+                    }*/
                     break;
 
 
@@ -116,14 +125,12 @@ namespace LPR381_Project
                         // Execute the Ranking Table and Evaluation
                         string rankingTable = knapsack.RankingTable();
                         string rankingEvaluation = knapsack.RankingEvaluation();
-                        string iterations = knapsack.Iterations();
 
                         // Display the results
                         Console.WriteLine(rankingTable);
                         Console.WriteLine();
                         Console.WriteLine(rankingEvaluation);
                         Console.WriteLine();
-                        Console.WriteLine(iterations);
                     }
                     catch (Exception ex)
                     {

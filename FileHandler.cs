@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace LPR381_Project
 {
@@ -11,12 +12,14 @@ namespace LPR381_Project
         private string problemType;
         private int[] objFunction;
         private int[,] constraintsCoefficients;
+        private string[] constraintSign;
         private int[] rhsConstraints;
         private string[] signRestrictions;
 
         public string ProblemType { get => problemType; set => problemType = value; }
         public int[] ObjFunction { get => objFunction; set => objFunction = value; }
         public int[,] ConstraintsCoefficients { get => constraintsCoefficients; set => constraintsCoefficients = value; }
+        public string[] ConstraintSign { get => constraintSign; set => constraintSign = value; }
         public int[] RhsConstraints { get => rhsConstraints; set => rhsConstraints = value; }
         public string[] SignRestrictions { get => signRestrictions; set => signRestrictions = value; }
 
@@ -77,55 +80,63 @@ namespace LPR381_Project
                 throw new InvalidOperationException("No constraints found in the file.");
             }
 
-            constraintsCoefficients = new int[numConstraints, ObjFunction.Length];
-            rhsConstraints = new int[numConstraints];
+            ConstraintsCoefficients = new int[numConstraints, ObjFunction.Length];
+            RhsConstraints = new int[numConstraints];
+            ConstraintSign = new string[numConstraints];
 
             for (int i = 0; i < numConstraints; i++)
             {
                 var constraintParts = constraintLines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (constraintParts.Length != ObjFunction.Length + 1)
+                if (constraintParts.Length != ObjFunction.Length + 2)
                 {
                     throw new InvalidOperationException("Mismatch between number of constraints and objective function elements.");
                 }
 
                 for (int j = 0; j < ObjFunction.Length; j++)
                 {
-                    if (!int.TryParse(constraintParts[j], out constraintsCoefficients[i, j]))
+                    if (!int.TryParse(constraintParts[j], out ConstraintsCoefficients[i, j]))
                     {
                         throw new InvalidOperationException($"Invalid constraint coefficient at line {constraintStartLine + i + 1}, position {j + 1}.");
                     }
                 }
 
-                if (!int.TryParse(constraintParts[constraintParts.Length - 1].Trim(new char[] { '<', '=', '>' }), out rhsConstraints[i]))
+               
+                
+
+                // Parse the RHS constraint
+                if (!int.TryParse(constraintParts[ObjFunction.Length + 1], out RhsConstraints[i]))
                 {
                     throw new InvalidOperationException($"Invalid RHS constraint at line {constraintStartLine + i + 1}, position {constraintParts.Length}.");
                 }
             }
         }
 
+
         public void ParseSignRestrictions(string fileContent)
         {
             var lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.None);
             var signRestrictionsLine = lines[lines.Length - 1];
-            signRestrictions = signRestrictionsLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            SignRestrictions = signRestrictionsLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public override string ToString()
         {
-            string constraintsStr = "";
-            for (int i = 0; i < constraintsCoefficients.GetLength(0); i++)
+            // Build the constraints string with sign restrictions
+            StringBuilder constraintsStr = new StringBuilder();
+            for (int i = 0; i < ConstraintsCoefficients.GetLength(0); i++)
             {
-                for (int j = 0; j < constraintsCoefficients.GetLength(1); j++)
+                for (int j = 0; j < ConstraintsCoefficients.GetLength(1); j++)
                 {
-                    constraintsStr += constraintsCoefficients[i, j] + " ";
+                    constraintsStr.Append(ConstraintsCoefficients[i, j] + " ");
                 }
-                constraintsStr += "<= " + rhsConstraints[i] + "\n";
+                constraintsStr.Append(ConstraintSign[i] + " " + RhsConstraints[i] + "\n");
             }
 
+            // Build the full string representation
             return $"IP Model Values:\n" +
                    $"----------------\n" +
-                   $"Problem Type: {ProblemType}\n \n" +
-                   $"Objective Function: {string.Join(" ", ObjFunction)}\n \n" +
+                   $"Problem Type: {ProblemType}\n\n" +
+                   $"Objective Function: {string.Join(" ", ObjFunction)}\n\n" +
                    $"Constraints:\n{constraintsStr}\n" +
                    $"Sign Restrictions: {string.Join(" ", SignRestrictions)}\n";
         }

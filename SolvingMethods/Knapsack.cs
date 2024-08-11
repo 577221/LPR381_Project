@@ -126,7 +126,7 @@ namespace LPR381_Project
             return sb.ToString();
         }
 
-        public string GenerateKnapsackSolution()
+        /*public string GenerateKnapsackSolution()
         {
             StringBuilder sb = new StringBuilder();
 
@@ -233,7 +233,7 @@ namespace LPR381_Project
                 }
             }
             return newRHS;
-        }
+        }*/
     }
 }
 
