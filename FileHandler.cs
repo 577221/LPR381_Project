@@ -9,10 +9,10 @@ namespace LPR381_Project
         private string filepath;
         private Model model;
 
-        public FileHandler(string filepath)
+        public FileHandler(string filepath, Model model)
         {
             this.filepath = filepath;
-            model = new Model();
+            this.model = model;
         }
 
         // Function that reads the content of the text file

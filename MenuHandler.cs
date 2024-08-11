@@ -66,12 +66,7 @@ namespace LPR381_Project
                     Console.WriteLine("Primal Simplex:");
                     Console.WriteLine("---------------");
 
-                    Duality duality = new Duality(
-                        model.ProblemType,
-                        model.ObjFunction,
-                        model.ConstraintsCoefficients,
-                        model.RhsConstraints,
-                        model.SignRestrictions);
+                    Duality duality = new Duality(model);
 
                     Console.WriteLine(duality.PrimalTable());
 
