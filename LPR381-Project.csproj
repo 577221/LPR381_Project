@@ -51,8 +51,8 @@
   <ItemGroup>
     <Compile Include="Duality.cs" />
     <Compile Include="FileHandler.cs" />
-    <Compile Include="Menu.cs" />
     <Compile Include="MenuHandler.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="Sensitivity.cs" />
     <Compile Include="SolvingMethods\BranchAndBound.cs" />
     <Compile Include="SolvingMethods\CuttingPlane.cs" />

@@ -48,7 +48,7 @@ namespace LPR381_Project.SolvingMethods
             //Tabluafy();
             //Console.WriteLine(ToString());
 
-            Prepare();
+            //Prepare();
             bool optimal = false;
 
             while (!optimal)
@@ -83,7 +83,7 @@ namespace LPR381_Project.SolvingMethods
         }
 
         //Creates a NxM matrix that contains the lpr problem
-        private Prepare()
+        /*private Prepare()
         {
             float[,] constraints = new float[constraintsCoefficients.GetLength(0), constraintsCoefficients.GetLength(1) + 2];
 
@@ -142,7 +142,7 @@ namespace LPR381_Project.SolvingMethods
                     Console.Write(tablua[i, j - 1] + " ");
                 }
             }
-        }
+        }*/
 
         //Transforms the tableua into a string that can then be written to console
         public override string ToString()

@@ -8,11 +8,11 @@ namespace LPR381_Project
 {
     internal class MenuHandler
     {
-        public FileHandler fileHandler;
+        public Model model;
 
-        public MenuHandler(FileHandler fileHandler)
+        public MenuHandler(Model model)
         {
-            this.fileHandler = fileHandler;
+            this.model = model;
         }
 
         private enum Menu
@@ -67,11 +67,11 @@ namespace LPR381_Project
                     Console.WriteLine("---------------");
 
                     Duality duality = new Duality(
-                        fileHandler.ProblemType,
-                        fileHandler.ObjFunction,
-                        fileHandler.ConstraintsCoefficients,
-                        fileHandler.RhsConstraints,
-                        fileHandler.SignRestrictions);
+                        model.ProblemType,
+                        model.ObjFunction,
+                        model.ConstraintsCoefficients,
+                        model.RhsConstraints,
+                        model.SignRestrictions);
 
                     Console.WriteLine(duality.PrimalTable());
 
@@ -116,11 +116,11 @@ namespace LPR381_Project
                     try
                     {
                         Knapsack knapsack = new Knapsack(
-                            fileHandler.ProblemType,
-                            fileHandler.ObjFunction,
-                            fileHandler.ConstraintsCoefficients,
-                            fileHandler.RhsConstraints,
-                            fileHandler.SignRestrictions);
+                            model.ProblemType,
+                            model.ObjFunction,
+                            model.ConstraintsCoefficients,
+                            model.RhsConstraints,
+                            model.SignRestrictions);
 
                         // Execute the Ranking Table and Evaluation
                         string rankingTable = knapsack.RankingTable();
