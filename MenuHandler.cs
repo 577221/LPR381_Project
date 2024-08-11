@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LPR381_Project.SolvingMethods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -182,15 +183,21 @@ namespace LPR381_Project
             switch (choice)
             {
                 case SubMenu.Sensitivity:
+                    Console.WriteLine();
                     Console.WriteLine("Sensitivity Analysis");
                     Console.WriteLine("--------------------");
 
                     break;
 
                 case SubMenu.Duality:
+                    Console.WriteLine();
                     Console.WriteLine("Duality:");
                     Console.WriteLine("--------");
 
+                    Duality duality = new Duality(model);
+                    Console.WriteLine(duality.PrimalForm());
+                    Model dualModel = duality.ApplyDuality();
+                    Console.WriteLine(duality.DualForm(dualModel));
                     break;
             }
         }
