@@ -75,6 +75,16 @@ namespace LPR381_Project
                     Console.WriteLine("Primal Simplex:");
                     Console.WriteLine("---------------");
 
+                    try
+                    {
+                        Primal primal = new Primal(model);
+                        primal.Solve();
+                        Console.WriteLine(primal.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
                     break;
 
                 case Menu.RevisedSimplex:
