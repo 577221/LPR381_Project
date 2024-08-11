@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +8,41 @@ namespace LPR381_Project
 {
     internal class Sensitivity
     {
-        public void AddNewActivity(double newCoefficient)
+        // Non-Basic Variables
+        public static void ChangeNBV()
+        {
+
+        }
+
+        public static void DisplayNBVRange()
+        {
+
+        }
+
+        // Basic Variables
+        public static void ChangeBV()
+        {
+
+        }
+
+        public static void DisplayBVRange()
+        {
+
+        }
+
+        // RHS Values
+        public static void ChangeRHS()
+        {
+
+        }
+
+        public static void DisplayRHSRange()
+        {
+
+        }
+
+        // Adding New Activity
+        /*public void AddNewActivity(double newCoefficient)
         {
             ObjectiveCoefficients.Add(newCoefficient);
             foreach (var constraint in Constraints)
@@ -18,6 +52,12 @@ namespace LPR381_Project
                 constraint.Coefficients.Add(newConstraintCoefficient);
             }
 
+        }*/
+
+        // Adding new Constraint
+        public static void AddNewConstraint()
+        {
+
         }
     }
-}*/
+}
