@@ -60,6 +60,9 @@ namespace LPR381_Project
 
         private void ExecuteChoice(Menu choice)
         {
+            // Retrieve the model data from FileHandler
+            Model model = fileHandler.GetModel();
+
             switch (choice)
             {
                 case Menu.PrimalSimplex:
@@ -67,19 +70,20 @@ namespace LPR381_Project
                     Console.WriteLine("---------------");
 
                     Duality duality = new Duality(
-                        fileHandler.ProblemType,
-                        fileHandler.ObjFunction,
-                        fileHandler.ConstraintsCoefficients,
-                        fileHandler.RhsConstraints,
-                        fileHandler.SignRestrictions);
+                        model.ProblemType,
+                        model.ObjFunction,
+                        model.ConstraintsCoefficients,
+                        model.RhsConstraints,
+                        model.SignRestrictions);
 
                     Console.WriteLine(duality.PrimalTable());
-
                     break;
 
                 case Menu.RevisedSimplex:
                     Console.WriteLine("Revised Primal Simplex:");
                     Console.WriteLine("-----------------------");
+
+                    // Implement Revised Primal Simplex logic here
 
                     break;
 
@@ -87,28 +91,17 @@ namespace LPR381_Project
                     Console.WriteLine("Branch & Bound Simplex:");
                     Console.WriteLine("-----------------------");
 
+                    // Implement Branch & Bound Simplex logic here
+
                     break;
 
                 case Menu.CuttingPlane:
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
-                    /*try
-                    {
-                        Console.Write("Enter file path: ");
-                        var filePath = Console.ReadLine();
-                        var input = new ModelInput(filePath);
-                        Console.WriteLine("Model loaded successfully.");
 
-                        var solver = new SolverWrapper();
-                        solver.Solve(input);
-                        Console.WriteLine("Model solved. Results written to output.txt.");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error: {ex.Message}");
-                    }*/
+                    // Implement Cutting Plane Simplex logic here
+
                     break;
-
 
                 case Menu.Knapsack:
                     Console.WriteLine("Branch & Bound Knapsack:");
@@ -116,11 +109,11 @@ namespace LPR381_Project
                     try
                     {
                         Knapsack knapsack = new Knapsack(
-                            fileHandler.ProblemType,
-                            fileHandler.ObjFunction,
-                            fileHandler.ConstraintsCoefficients,
-                            fileHandler.RhsConstraints,
-                            fileHandler.SignRestrictions);
+                            model.ProblemType,
+                            model.ObjFunction,
+                            model.ConstraintsCoefficients,
+                            model.RhsConstraints,
+                            model.SignRestrictions);
 
                         // Execute the Ranking Table and Evaluation
                         string rankingTable = knapsack.RankingTable();
@@ -141,4 +134,5 @@ namespace LPR381_Project
         }
     }
 }
-   
+
+
