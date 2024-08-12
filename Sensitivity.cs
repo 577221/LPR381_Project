@@ -8,31 +8,33 @@ namespace LPR381_Project
 {
     internal class Sensitivity
     {
-        private Model model;
+        private ModelInput modelInput;
 
-        public Sensitivity(Model model)
+        public Sensitivity(ModelInput modelInput)
         {
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            this.modelInput = modelInput;
         }
 
         // Non-Basic Variables
         public void ChangeNBV(int variableIndex, double newCoefficient)
         {
             // Change the objective coefficient of a non-basic variable
-            double originalCoefficient = model.ObjFunction[variableIndex];
-            model.ObjFunction[variableIndex] = (int)newCoefficient;
+            double originalCoefficient = modelInput.ObjectiveCoefficients[variableIndex];
+            modelInput.ObjectiveCoefficients[variableIndex] = newCoefficient;
 
             Console.WriteLine($"Non-Basic Variable x{variableIndex + 1} Coefficient changed from {originalCoefficient} to {newCoefficient}");
         }
 
+
         public void DisplayNBVRange(int variableIndex)
         {
             // Display the allowable increase and decrease of the objective coefficient of a non-basic variable
-            double originalCoefficient = model.ObjFunction[variableIndex];
+            double originalCoefficient = modelInput.ObjectiveCoefficients[variableIndex];
 
             Console.WriteLine($"Non-Basic Variable x{variableIndex + 1}:");
             Console.WriteLine($"Original Coefficient: {originalCoefficient}");
 
+            // For simplicity, these would be computed based on solver outputs or assumptions
             double allowableIncrease = double.PositiveInfinity;  
             double allowableDecrease = originalCoefficient;     
 
@@ -56,8 +58,8 @@ namespace LPR381_Project
         public void ChangeRHS(int constraintIndex, double newRHS)
         {
             // Change the RHS of a constraint
-            double originalRHS = model.RhsConstraints[constraintIndex];
-            model.RhsConstraints[constraintIndex] = (int)newRHS;
+            double originalRHS = modelInput.Constraints[constraintIndex].RHS;
+            modelInput.Constraints[constraintIndex].RHS = newRHS;
 
             Console.WriteLine($"RHS of Constraint {constraintIndex + 1} changed from {originalRHS} to {newRHS}");
         }
@@ -65,13 +67,14 @@ namespace LPR381_Project
         public void DisplayRHSRange(int constraintIndex)
         {
             // Display the allowable increase and decrease of a constraint's RHS
-            double originalRHS = model.RhsConstraints[constraintIndex];
+            double originalRHS = modelInput.Constraints[constraintIndex].RHS;
 
             Console.WriteLine($"RHS of Constraint {constraintIndex + 1}:");
             Console.WriteLine($"Original RHS: {originalRHS}");
 
-            double allowableIncrease = double.PositiveInfinity;
-            double allowableDecrease = originalRHS;
+            // For simplicity, these would be computed based on solver outputs or assumptions
+            double allowableIncrease = double.PositiveInfinity;  // Example, replace with actual computation
+            double allowableDecrease = originalRHS;              // Example, replace with actual computation
 
             Console.WriteLine($"Allowable Increase: {allowableIncrease}");
             Console.WriteLine($"Allowable Decrease: {allowableDecrease}");
@@ -80,8 +83,8 @@ namespace LPR381_Project
         // Adding New Activity
         public void AddNewActivity(double newCoefficient)
         {
-            model.ObjFunction.Add(newCoefficient);
-            foreach (var constraint in model.Constraints)
+            modelInput.ObjectiveCoefficients.Add(newCoefficient);
+            foreach (var constraint in modelInput.Constraints)
             {
                 Console.Write($"Enter coefficient for the new activity in constraint with RHS {constraint.RHS}: ");
                 double newConstraintCoefficient = double.Parse(Console.ReadLine());
@@ -92,14 +95,13 @@ namespace LPR381_Project
         // Adding New Constraint
         public void AddNewConstraint(List<double> coefficients, string relation, double rhs)
         {
-            // Add a new constraint to the model
             CustomConstraint newConstraint = new CustomConstraint
             {
                 Coefficients = coefficients,
                 Relation = relation,
                 RHS = rhs
             };
-            model.Constraints.Add(newConstraint);
+            modelInput.Constraints.Add(newConstraint);
         }
     }
 }

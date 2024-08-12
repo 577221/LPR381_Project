@@ -218,7 +218,7 @@ namespace LPR381_Project
                         Console.WriteLine(duality.PrimalForm());
                         Model dualModel = duality.ApplyDuality();
                         Console.WriteLine(duality.DualForm(dualModel));
-                        Console.WriteLine(duality.SolveDuality());
+                        //Console.WriteLine(duality.SolveDuality());
                     }
                     catch (Exception ex)
                     {
