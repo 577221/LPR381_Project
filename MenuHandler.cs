@@ -23,7 +23,8 @@ namespace LPR381_Project
             BranchAndBound,
             CuttingPlane,
             Knapsack,
-            Other
+            Other,
+            Exit
         }
 
         private enum SubMenu
@@ -46,8 +47,9 @@ namespace LPR381_Project
                 Console.WriteLine("4. Cutting Plane Simplex");
                 Console.WriteLine("5. Branch & Bound Knapsack");
                 Console.WriteLine("6. Other");
+                Console.WriteLine("7. Exit");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1, 2, 3, 4, 5 or 6:");
+                Console.WriteLine("Please enter 1 - 7:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
@@ -106,21 +108,15 @@ namespace LPR381_Project
                     Console.WriteLine();
                     Console.WriteLine("Cutting Plane Simplex:");
                     Console.WriteLine("----------------------");
-                    /*try
+                    try
                     {
-                        Console.Write("Enter file path: ");
-                        var filePath = Console.ReadLine();
-                        var input = new ModelInput(filePath);
-                        Console.WriteLine("Model loaded successfully.");
-
-                        var solver = new SolverWrapper();
-                        solver.Solve(input);
-                        Console.WriteLine("Model solved. Results written to output.txt.");
+                        CuttingPlane cuttingPlane = new CuttingPlane();
+                        cuttingPlane.ApplyCuttingPlane();  // Apply the Gomory Cutting Plane algorithm
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
-                    }*/
+                    }
                     break;
 
 
@@ -161,9 +157,10 @@ namespace LPR381_Project
                 case Menu.Other:
                     ShowOtherMenu();
                     break;
+
+                case Menu.Exit:
+                    break;
             }
-
-
         }
 
         private void ShowOtherMenu()
@@ -214,10 +211,19 @@ namespace LPR381_Project
                     Console.WriteLine("Duality:");
                     Console.WriteLine("--------");
 
-                    Duality duality = new Duality(model);
-                    Console.WriteLine(duality.PrimalForm());
-                    Model dualModel = duality.ApplyDuality();
-                    Console.WriteLine(duality.DualForm(dualModel));
+                    try
+                    {
+                        Model model = new Model();  // You need to adapt this to your model's structure
+                        Duality duality = new Duality(model);
+                        Console.WriteLine(duality.PrimalForm());
+                        Model dualModel = duality.ApplyDuality();
+                        Console.WriteLine(duality.DualForm(dualModel));
+                        Console.WriteLine(duality.SolveDuality());
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
                     break;
             }
         }

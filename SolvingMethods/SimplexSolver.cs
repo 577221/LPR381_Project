@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LPR381_Project.SolvingMethods
 {
     internal class SimplexSolver
     {
-        public static double[] Solve(double[] objective, double[,] constraints, double[] bounds, double[] lowerBounds, double[] upperBounds)
+        public static double[] Solve(double[] objective, double[,] constraints, double[] bounds)
         {
             int numVariables = objective.Length;
             int numConstraints = bounds.Length;
 
-            // Initializing of tableau
+            // Initializing the tableau
             double[,] tableau = InitializeTableau(objective, constraints, bounds, numVariables, numConstraints);
 
             // Perform Simplex algorithm
@@ -48,28 +44,39 @@ namespace LPR381_Project.SolvingMethods
                         if (ratio < minRatio)
                         {
                             minRatio = ratio;
-                            pivot = i;
+                            pivotRow = i;
                         }
                     }
                 }
 
                 // If no valid pivot row is found, the problem is unbounded
-                if (pivot == -1)
+                if (pivotRow == -1)
                 {
                     throw new Exception("The problem is unbounded.");
                 }
 
                 // Pivot operation
-                Pivot(tableau, pivotColumn, pivot, numVariables, numConstraints);
+                Pivot(tableau, pivotColumn, pivotRow, numVariables, numConstraints);
             }
 
             // Extract the solution
             double[] solution = new double[numVariables];
-            for (int i = 0; i < numConstraints; i++)
+            for (int j = 0; j < numVariables; j++)
             {
-                if (tableau[i, numVariables + i] == 1)
+                bool isBasic = false;
+                for (int i = 0; i < numConstraints; i++)
                 {
-                    solution[i] = tableau[i, numVariables + numConstraints];
+                    if (tableau[i, j] == 1 && tableau[i, numVariables + i] == 1)
+                    {
+                        solution[j] = tableau[i, numVariables + numConstraints];
+                        isBasic = true;
+                        break;
+                    }
+                }
+
+                if (!isBasic)
+                {
+                    solution[j] = 0;
                 }
             }
 
@@ -100,25 +107,25 @@ namespace LPR381_Project.SolvingMethods
             return tableau;
         }
 
-        private static void Pivot(double[,] tableau, int pivotColumn, int pivot, int numVariables, int numConstraints)
+        private static void Pivot(double[,] tableau, int pivotColumn, int pivotRow, int numVariables, int numConstraints)
         {
-            double pivotElement = tableau[pivot, pivotColumn];
+            double pivotElement = tableau[pivotRow, pivotColumn];
 
             // Normalize the pivot row
             for (int j = 0; j <= numVariables + numConstraints; j++)
             {
-                tableau[pivot, j] /= pivotElement;
+                tableau[pivotRow, j] /= pivotElement;
             }
 
             // Eliminate the pivot column from other rows
             for (int i = 0; i <= numConstraints; i++)
             {
-                if (i != pivot)
+                if (i != pivotRow)
                 {
                     double factor = tableau[i, pivotColumn];
                     for (int j = 0; j <= numVariables + numConstraints; j++)
                     {
-                        tableau[i, j] -= factor * tableau[pivot, j];
+                        tableau[i, j] -= factor * tableau[pivotRow, j];
                     }
                 }
             }

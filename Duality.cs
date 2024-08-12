@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LPR381_Project.SolvingMethods;
+using System;
 using System.Linq;
 using System.Text;
 
@@ -53,7 +54,7 @@ namespace LPR381_Project
                 string constraint = string.Join(" + ", Enumerable.Range(0, dualModel.ConstraintsCoefficients.GetLength(1))
                     .Select(j => dualModel.ConstraintsCoefficients[i, j] == 0 ? "" : $"{dualModel.ConstraintsCoefficients[i, j]}y{j + 1}")
                     .Where(val => !string.IsNullOrEmpty(val))); // Remove empty zeros
-               
+
                 constraintsStr.Append($"{constraint} {dualModel.OperatorsConstraints[i]} {dualModel.RhsConstraints[i]}\n");
             }
 
@@ -130,13 +131,18 @@ namespace LPR381_Project
             return dualModel;
         }
 
-        public double SolveDuality()
+        public (double[] primalSolution, double[] dualSolution) SolveDuality()
         {
-            // Solve with Primal
-            return 0.00;
-        }
+            // Solve the primal form using the SimplexSolver
+            double[] primalSolution = SimplexSolver.Solve(model);
 
+            // Apply duality to get the dual model
+            Model dualModel = ApplyDuality();
+
+            // Solve the dual form using the SimplexSolver
+            double[] dualSolution = SimplexSolver.Solve(dualModel);
+
+            return (primalSolution, dualSolution);
+        }
     }
 }
-
-

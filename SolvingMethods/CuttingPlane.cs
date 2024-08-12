@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,225 +6,169 @@ using System.Threading.Tasks;
 using System.IO;
 using Google.OrTools.LinearSolver;
 using System.Text.RegularExpressions;
+using LPR381_Project.SolvingMethods;
 
-public class Program
+namespace LPR381_Project
 {
-    public static void Main(string[] args)
+
+    public class CuttingPlane
     {
-        ModelInput input = null;
+        private ModelInput input;
+        private const int MaxIterations = 100;
 
-        while (true)
+        public void LoadModel(string filePath)
         {
-            Console.WriteLine("Gomory Cutting Plane Algorithm");
-            Console.WriteLine("1. Load Model from File");
-            Console.WriteLine("2. Solve Model");
-            Console.WriteLine("3. Add New Activity");
-            Console.WriteLine("4. Exit");
-            Console.Write("Enter your choice: ");
-            var choice = Console.ReadLine();
-
-            if (choice == "1")
+            try
             {
-                Console.Write("Enter file path: ");
-                var filePath = Console.ReadLine();
-                try
-                {
-                    input = new ModelInput(filePath);
-                    Console.WriteLine("Model loaded successfully.");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error loading model: " + ex.Message);
-                }
+                input = new ModelInput(filePath);
+                Console.WriteLine("Model loaded successfully.");
             }
-            else if (choice == "2")
+            catch (Exception ex)
             {
-                if (input == null)
-                {
-                    Console.WriteLine("Please load a model first.");
-                    continue;
-                }
-
-                var solver = new SolverWrapper();
-                solver.Solve(input);
-                Console.WriteLine("Model solved. Results written to output.txt.");
-            }
-            else if (choice == "3")
-            {
-                if (input == null)
-                {
-                    Console.WriteLine("Please load a model first.");
-                    continue;
-                }
-
-                Console.Write("Enter the coefficient of the new activity: ");
-                double newCoefficient = double.Parse(Console.ReadLine());
-                input.AddNewActivity(newCoefficient);
-
-                var solver = new SolverWrapper();
-                solver.Solve(input);
-                Console.WriteLine("New activity added and model re-solved. Results written to output.txt.");
-            }
-            else if (choice == "4")
-            {
-                break;
-            }
-            else
-            {
-                Console.WriteLine("Invalid choice. Try again.");
+                Console.WriteLine("Error loading model: " + ex.Message);
             }
         }
-    }
-}
 
-public class ModelInput
-{
-    public string OptimizationType { get; set; }
-    public List<double> ObjectiveCoefficients { get; set; }
-    public List<Constraint> Constraints { get; set; }
-    public List<string> SignRestrictions { get; set; }
-
-    public ModelInput(string filePath)
-    {
-        ObjectiveCoefficients = new List<double>();
-        Constraints = new List<Constraint>();
-        SignRestrictions = new List<string>();
-        ParseInputFile(filePath);
-    }
-
-    private void ParseInputFile(string filePath)
-    {
-        var lines = File.ReadAllLines(filePath);
-        var firstLine = lines[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-        OptimizationType = firstLine[0];
-        for (int i = 1; i < firstLine.Length; i += 2)
+        public void ApplyCuttingPlane()
         {
-            string sign = firstLine[i];
-            string coefficientStr = firstLine[i + 1];
-            double coefficient;
-            if (sign == "+")
+            if (input == null)
             {
-                coefficient = double.Parse(coefficientStr);
+                Console.WriteLine("Please load a model first.");
+                return;
             }
-            else if (sign == "-")
+
+            SolverWrapper solverWrapper = new SolverWrapper();
+            int iteration = 0;
+            bool feasible = true;
+
+            while (iteration < MaxIterations && feasible)
             {
-                coefficient = -double.Parse(coefficientStr);
+                iteration++;
+                Console.WriteLine($"\nIteration {iteration}: Solving the LP relaxation...");
+
+                feasible = solverWrapper.Solve(input);
+                DisplayCurrentSolution(solverWrapper, iteration, feasible);
+                WriteSolutionToFile(solverWrapper, iteration, feasible);
+
+                if (!feasible)
+                {
+                    Console.WriteLine("Model became infeasible. Exiting.");
+                    break;
+                }
+
+                // Identify the first fractional decision variable
+                int fractionalVarIndex = -1;
+                double fractionalValue = 0.0;
+
+                for (int i = 0; i < solverWrapper.DecisionVariableCount; i++)
+                {
+                    double value = solverWrapper.GetVariableValue(i);
+
+                    if (Math.Abs(value - Math.Round(value)) > 1e-6) // Check for fractional part
+                    {
+                        fractionalVarIndex = i;
+                        fractionalValue = value;
+                        break;
+                    }
+                }
+
+                if (fractionalVarIndex == -1)
+                {
+                    Console.WriteLine("Integer solution found. Stopping the algorithm.");
+                    break;
+                }
+
+                Console.WriteLine("Generating Gomory cut...");
+                CustomConstraint cut = GenerateGomoryCut(solverWrapper, fractionalVarIndex, fractionalValue);
+                if (cut == null)
+                {
+                    Console.WriteLine("Failed to generate a useful Gomory cut. Stopping the algorithm.");
+                    break;
+                }
+
+                // Add the cut to the model
+                input.Constraints.Add(cut);
+                Console.WriteLine("Gomory cut added.");
             }
-            else
+
+            if (iteration == MaxIterations)
             {
-                throw new FormatException("Invalid sign in input file.");
+                Console.WriteLine("Reached maximum iterations without finding an integer solution.");
             }
-            ObjectiveCoefficients.Add(coefficient);
+
+            Console.WriteLine("Final solution written to output.txt.");
         }
 
-        for (int i = 1; i < lines.Length - 1; i++)
+        private CustomConstraint GenerateGomoryCut(SolverWrapper solverWrapper, int fractionalVarIndex, double fractionalValue)
         {
-            var constraintParts = lines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            var constraint = new Constraint
+            var cut = new CustomConstraint
             {
                 Coefficients = new List<double>(),
-                Relation = constraintParts[constraintParts.Length - 2],
-                RHS = double.Parse(constraintParts[constraintParts.Length - 1])
+                Relation = "<=",
+                RHS = Math.Floor(fractionalValue)  // Floor the RHS to enforce the cut
             };
 
-            for (int j = 0; j < constraintParts.Length - 2; j += 2)
+            for (int i = 0; i < solverWrapper.DecisionVariableCount; i++)
             {
-                string sign = constraintParts[j];
-                string coefficientStr = constraintParts[j + 1];
-                double coefficient;
-                if (sign == "+")
-                {
-                    coefficient = double.Parse(coefficientStr);
-                }
-                else if (sign == "-")
-                {
-                    coefficient = -double.Parse(coefficientStr);
-                }
-                else
-                {
-                    throw new FormatException("Invalid sign in input file.");
-                }
-                constraint.Coefficients.Add(coefficient);
+                double coeff = solverWrapper.GetVariableValue(i) - Math.Floor(solverWrapper.GetVariableValue(i));
+                cut.Coefficients.Add(coeff);
             }
 
-            Constraints.Add(constraint);
+            // Ensure the coefficient corresponding to the fractional variable is correctly reduced
+            cut.Coefficients[fractionalVarIndex] -= fractionalValue;
+
+            return cut;
         }
 
-        SignRestrictions.AddRange(lines[^1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
-    }
-
-    public void AddNewActivity(double newCoefficient)
-    {
-        ObjectiveCoefficients.Add(newCoefficient);
-        foreach (var constraint in Constraints)
+        private void DisplayCurrentSolution(SolverWrapper solverWrapper, int iteration, bool feasible)
         {
-            Console.Write($"Enter coefficient for the new activity in constraint with RHS : ");
-            double newConstraintCoefficient = double.Parse(Console.ReadLine());
-            constraint.Coefficients.Add(newConstraintCoefficient);
+            Console.WriteLine($"Iteration {iteration}:");
+
+            if (!feasible)
+            {
+                Console.WriteLine("Model became infeasible, but here is the last solution:");
+            }
+
+            Console.WriteLine($"Objective Value: {solverWrapper.GetObjectiveValue()}");
+
+            for (int i = 0; i < solverWrapper.DecisionVariableCount; i++)
+            {
+                Console.WriteLine($"x{i + 1} = {solverWrapper.GetVariableValue(i)}");
+            }
+
+            for (int i = 0; i < solverWrapper.SlackVariableCount; i++)
+            {
+                Console.WriteLine($"s{i + 1} = {solverWrapper.GetVariableValue(solverWrapper.DecisionVariableCount + i)}");
+            }
+
+            Console.WriteLine();  // Add a blank line for readability
+        }
+
+        private void WriteSolutionToFile(SolverWrapper solverWrapper, int iteration, bool feasible)
+        {
+            using (var writer = new StreamWriter("output.txt", true))
+            {
+                writer.WriteLine($"Iteration {iteration}:");
+
+                if (!feasible)
+                {
+                    writer.WriteLine("Model became infeasible, but here is the last solution:");
+                }
+
+                writer.WriteLine($"Objective Value: {solverWrapper.GetObjectiveValue()}");
+
+                for (int i = 0; i < solverWrapper.DecisionVariableCount; i++)
+                {
+                    writer.WriteLine($"x{i + 1} = {solverWrapper.GetVariableValue(i)}");
+                }
+
+                for (int i = 0; i < solverWrapper.SlackVariableCount; i++)
+                {
+                    writer.WriteLine($"s{i + 1} = {solverWrapper.GetVariableValue(solverWrapper.DecisionVariableCount + i)}");
+                }
+
+                writer.WriteLine();  // Add a blank line for readability
+            }
         }
     }
 }
-
-public class Constraint
-{
-    public List<double> Coefficients { get; set; }
-    public string Relation { get; set; }
-    public double RHS { get; set; }
-}
-
-public class SolverWrapper
-{
-    public void Solve(ModelInput input)
-    {
-        var solver = Google.OrTools.LinearSolver.Solver.CreateSolver("GLOP");
-        if (solver == null) throw new Exception("Could not create solver.");
-
-        var variables = new List<Variable>();
-        for (int i = 0; i < input.ObjectiveCoefficients.Count; i++)
-        {
-            var variable = solver.MakeNumVar(0.0, double.PositiveInfinity, $"x{i}");
-            variables.Add(variable);
-        }
-
-        // Set up the objective function
-        var objective = solver.Objective();
-        for (int i = 0; i < input.ObjectiveCoefficients.Count; i++)
-        {
-            objective.SetCoefficient(variables[i], input.ObjectiveCoefficients[i]);
-        }
-        if (input.OptimizationType == "max")
-        {
-            objective.SetMaximization();
-        }
-        else
-        {
-            objective.SetMinimization();
-        }
-
-        // Add constraints
-        foreach (var constraint in input.Constraints)
-        {
-            var ct = solver.MakeConstraint(constraint.RHS, constraint.RHS);
-            for (int i = 0; i < constraint.Coefficients.Count; i++)
-            {
-                ct.SetCoefficient(variables[i], constraint.Coefficients[i]);
-            }
-        }
-
-        // Solve the problem
-        solver.Solve();
-
-        // Write the solution to a file
-        using (var writer = new StreamWriter("output.txt"))
-        {
-            writer.WriteLine($"Objective Value: {solver.Objective().Value()}");
-            for (int i = 0; i < variables.Count; i++)
-            {
-                writer.WriteLine($"{variables[i].Name()} = {variables[i].SolutionValue()}");
-            }
-        }
-    }
-}*/
-
-    
