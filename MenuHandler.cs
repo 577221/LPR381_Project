@@ -30,7 +30,16 @@ namespace LPR381_Project
         private enum SubMenu
         {
             Sensitivity = 1,
-            Duality
+            Duality,
+            ReturnToMenu
+        }
+
+        private enum SensitivityMenu
+        {
+            ObjectiveCoefficientChange = 1,
+            ConstraintCoefficientChange,
+            RHSChange,
+            ReturnToSubMenu
         }
 
         public void ShowMenu()
@@ -56,7 +65,7 @@ namespace LPR381_Project
 
                 if (!validChoice || choice < 1 || choice > 6)
                 {
-                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 5.");
+                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 7.");
                     continue;
                 }
 
@@ -159,6 +168,7 @@ namespace LPR381_Project
                     break;
 
                 case Menu.Exit:
+                    Environment.Exit(0);
                     break;
             }
         }
@@ -174,16 +184,22 @@ namespace LPR381_Project
                 Console.WriteLine("----------------------------------------------------------------------");
                 Console.WriteLine("1. Sensitivity Analysis");
                 Console.WriteLine("2. Duality");
+                Console.WriteLine("3. Return to Main Menu");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 or 2:");
+                Console.WriteLine("Please enter 1 - 3:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
                 if (!validChoice || choice < 1 || choice > 2)
                 {
-                    Console.WriteLine("Invalid choice. Please enter 1 or 2.");
+                    Console.WriteLine("Invalid choice. Please enter 1 - 3.");
                     continue;
+                }
+
+                if (choice == (int)SubMenu.ReturnToMenu)
+                {
+                    return; // Return to the previous menu
                 }
 
                 ExecuteOtherMenuChoice((SubMenu)choice);
@@ -203,6 +219,7 @@ namespace LPR381_Project
                     Console.WriteLine();
                     Console.WriteLine("Sensitivity Analysis");
                     Console.WriteLine("--------------------");
+                    ShowSensitivityMenu();
 
                     break;
 
@@ -213,17 +230,70 @@ namespace LPR381_Project
 
                     try
                     {
-                        Model model = new Model();  // You need to adapt this to your model's structure
+                        Model model = new Model();
                         Duality duality = new Duality(model);
                         Console.WriteLine(duality.PrimalForm());
                         Model dualModel = duality.ApplyDuality();
                         Console.WriteLine(duality.DualForm(dualModel));
-                        //Console.WriteLine(duality.SolveDuality());
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"Error: {ex.Message}");
                     }
+                    break;
+            }
+        }
+
+        private void ShowSensitivityMenu()
+        {
+            bool continueLoop = true;
+
+            while (continueLoop)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Sensitivity Analysis Options:");
+                Console.WriteLine("-----------------------------");
+                Console.WriteLine("1. Objective Coefficient Change");
+                Console.WriteLine("2. Constraint Coefficient Change");
+                Console.WriteLine("3. RHS Change");
+                Console.WriteLine("4. Return to Previous Menu");
+                Console.WriteLine();
+                Console.WriteLine("Please enter 1 - 4:");
+
+                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 3)
+                {
+                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
+                    continue;
+                }
+
+                if (choice == (int)SensitivityMenu.ReturnToSubMenu)
+                {
+                    return; // Return to the previous menu
+                }
+
+                ExecuteSensitivityMenuChoice((SensitivityMenu)choice);
+                Console.WriteLine();
+                Console.WriteLine("Press 'Q' to return to the sensitivity menu or any other key to continue...");
+                var key = Console.ReadKey(true);
+                continueLoop = key.KeyChar != 'Q' && key.KeyChar != 'q';
+                Console.Clear();
+            }
+        }
+
+        private void ExecuteSensitivityMenuChoice(SensitivityMenu choice)
+        {
+            switch (choice)
+            {
+                case SensitivityMenu.ObjectiveCoefficientChange:
+                    Console.WriteLine("Objective Coefficient Change analysis not yet implemented.");
+                    break;
+
+                case SensitivityMenu.ConstraintCoefficientChange:
+                    Console.WriteLine("Constraint Coefficient Change analysis not yet implemented.");
+                    break;
+
+                case SensitivityMenu.RHSChange:
+                    Console.WriteLine("RHS Change analysis not yet implemented.");
                     break;
             }
         }
