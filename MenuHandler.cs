@@ -39,6 +39,8 @@ namespace LPR381_Project
             ObjectiveCoefficientChange = 1,
             ConstraintCoefficientChange,
             RHSChange,
+            NewActivity,
+            NewConstraint,
             ReturnToSubMenu
         }
 
@@ -58,7 +60,7 @@ namespace LPR381_Project
                 Console.WriteLine("6. Other");
                 Console.WriteLine("7. Exit");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 - 7:");
+                Console.WriteLine("Please enter anumber between 1 and 7:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
@@ -186,14 +188,14 @@ namespace LPR381_Project
                 Console.WriteLine("2. Duality");
                 Console.WriteLine("3. Return to Main Menu");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 - 3:");
+                Console.WriteLine("Please enter a number between 1 and 3:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
                 if (!validChoice || choice < 1 || choice > 3)
                 {
-                    Console.WriteLine("Invalid choice. Please enter 1 - 3.");
+                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
                     continue;
                 }
 
@@ -253,16 +255,18 @@ namespace LPR381_Project
                 Console.WriteLine();
                 Console.WriteLine("Sensitivity Analysis Options:");
                 Console.WriteLine("-----------------------------");
-                Console.WriteLine("1. Objective Coefficient Change");
-                Console.WriteLine("2. Constraint Coefficient Change");
-                Console.WriteLine("3. RHS Change");
-                Console.WriteLine("4. Return to Previous Menu");
+                Console.WriteLine("1. Change Objective Coefficient");
+                Console.WriteLine("2. Change Constraint Coefficient");
+                Console.WriteLine("3. Change RHS Value");
+                Console.WriteLine("4. Add a new activity");
+                Console.WriteLine("5. Add a new constraint");
+                Console.WriteLine("6. Return to Previous Menu");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 - 4:");
+                Console.WriteLine("Please enter a number between 1 and 6:");
 
-                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 4)
+                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 6)
                 {
-                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
+                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 6.");
                     continue;
                 }
 
@@ -293,19 +297,20 @@ namespace LPR381_Project
                     break;
 
                 case SensitivityMenu.ConstraintCoefficientChange:
-                    Console.WriteLine("What variable's constraint value would you like to change?");
-                    string constraintVariable = Console.ReadLine();
-                    Console.WriteLine("Please enter the new value: ");
-                    int constraintValue = int.Parse(Console.ReadLine());
+                    
 
                     break;
 
                 case SensitivityMenu.RHSChange:
-                    Console.WriteLine("What constraint's RHS value would you like to change?");
-                    string rhsConstraint = Console.ReadLine();
-                    Console.WriteLine("Please enter the new value: ");
-                    int rhsValue = int.Parse(Console.ReadLine());
+                    
 
+                    break;
+
+                case SensitivityMenu.NewActivity:
+                    break;
+
+                case SensitivityMenu.NewConstraint:
+                    Console.WriteLine("Please enter the new constraint (form: x1 +/-x2 +/-x3 <=/>= rhs): ");
                     break;
             }
         }
