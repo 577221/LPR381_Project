@@ -63,7 +63,7 @@ namespace LPR381_Project
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
-                if (!validChoice || choice < 1 || choice > 6)
+                if (!validChoice || choice < 1 || choice > 7)
                 {
                     Console.WriteLine("Invalid choice. Please enter a number between 1 and 7.");
                     continue;
@@ -191,7 +191,7 @@ namespace LPR381_Project
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
-                if (!validChoice || choice < 1 || choice > 2)
+                if (!validChoice || choice < 1 || choice > 3)
                 {
                     Console.WriteLine("Invalid choice. Please enter 1 - 3.");
                     continue;
@@ -260,7 +260,7 @@ namespace LPR381_Project
                 Console.WriteLine();
                 Console.WriteLine("Please enter 1 - 4:");
 
-                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 3)
+                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 4)
                 {
                     Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
                     continue;
@@ -285,15 +285,27 @@ namespace LPR381_Project
             switch (choice)
             {
                 case SensitivityMenu.ObjectiveCoefficientChange:
-                    Console.WriteLine("Objective Coefficient Change analysis not yet implemented.");
+                    Console.WriteLine("What variable's objective function value would you like to change?");
+                    string objVariable = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int objValue = int.Parse(Console.ReadLine());
+
                     break;
 
                 case SensitivityMenu.ConstraintCoefficientChange:
-                    Console.WriteLine("Constraint Coefficient Change analysis not yet implemented.");
+                    Console.WriteLine("What variable's constraint value would you like to change?");
+                    string constraintVariable = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int constraintValue = int.Parse(Console.ReadLine());
+
                     break;
 
                 case SensitivityMenu.RHSChange:
-                    Console.WriteLine("RHS Change analysis not yet implemented.");
+                    Console.WriteLine("What constraint's RHS value would you like to change?");
+                    string rhsConstraint = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int rhsValue = int.Parse(Console.ReadLine());
+
                     break;
             }
         }
