@@ -289,7 +289,7 @@ namespace LPR381_Project
             switch (choice)
             {
                 case SensitivityMenu.ObjectiveCoefficientChange:
-                    Console.WriteLine("What variable's objective function value would you like to change?");
+                    Console.WriteLine("What variable's objective function value would you like to change? (1 for x1, 2 for x2 etc.)");
                     string objVariable = Console.ReadLine();
                     Console.WriteLine("Please enter the new value: ");
                     int objValue = int.Parse(Console.ReadLine());
@@ -297,12 +297,18 @@ namespace LPR381_Project
                     break;
 
                 case SensitivityMenu.ConstraintCoefficientChange:
-                    
+                    Console.WriteLine("What variable's constraint value would you like to change? (1 for x1, 2 for x2 etc.)");
+                    string constraintVariable = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int constraintValue = int.Parse(Console.ReadLine());
 
                     break;
 
                 case SensitivityMenu.RHSChange:
-                    
+                    Console.WriteLine("What rhs value would you like to change? (1 for C1, 2 for C2 etc.)");
+                    string rhsConstraint = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int rhsValue = int.Parse(Console.ReadLine());
 
                     break;
 
