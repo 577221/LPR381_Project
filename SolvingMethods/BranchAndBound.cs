@@ -99,7 +99,7 @@ namespace LPR381_Project.SolvingMethods
 
     static double[] SolveLP(double[] objective, double[,] constraints, double[] bounds, double[] lowerBounds, double[] upperBounds)
     {
-        // Use the Simplex solver to solve the LP problem
+        // Use Simplex solver to check feasibility
         return SimplexSolver.Solve(objective, constraints, bounds, lowerBounds, upperBounds);
     }
 
@@ -128,53 +128,57 @@ namespace LPR381_Project.SolvingMethods
     static LinearProgram ReadProblemFromFile(string filePath)
     {
         string[] lines = File.ReadAllLines(filePath);
-        List<double> objective = new List<double>();
+        double[] objective = null;
         List<double[]> constraints = new List<double[]>();
         List<double> bounds = new List<double>();
+        bool maximize = true;
         List<double> lowerBounds = new List<double>();
         List<double> upperBounds = new List<double>();
 
-        int section = 0; // 0 = Objective, 1 = Constraints, 2 = Bounds
-        foreach (string line in lines)
-        {
-            string trimmedLine = line.Trim();
+        int lineIndex = 0;
 
-            if (trimmedLine.StartsWith("Objective:"))
+        // Read the objective function
+        var objectiveParts = lines[lineIndex++].Split(' ');
+        maximize = objectiveParts[0] == "max";
+        objective = objectiveParts.Skip(1).Select(double.Parse).ToArray();
+
+        // Read the constraints
+        while (lineIndex < lines.Length && !lines[lineIndex].Trim().StartsWith("bin") && !lines[lineIndex].Trim().StartsWith("int") && !lines[lineIndex].Trim().StartsWith("urs"))
+        {
+            var constraintParts = lines[lineIndex++].Split(' ');
+            double[] constraint = constraintParts.Take(constraintParts.Length - 2).Select(double.Parse).ToArray();
+            constraints.Add(constraint);
+            bounds.Add(double.Parse(constraintParts.Last()));
+        }
+
+        // Read the variable types and bounds
+        var variableTypes = lines[lineIndex++].Split(' ');
+        for (int i = 0; i < variableTypes.Length; i++)
+        {
+            switch (variableTypes[i])
             {
-                section = 0;
-            }
-            else if (trimmedLine.StartsWith("Constraints:"))
-            {
-                section = 1;
-            }
-            else if (trimmedLine.StartsWith("Bounds:"))
-            {
-                section = 2;
-            }
-            else if (trimmedLine.StartsWith("max") || trimmedLine.StartsWith("min"))
-            {
-                var parts = trimmedLine.Split(' ', ';');
-                for (int i = 1; i < parts.Length - 1; i++)
-                {
-                    objective.Add(double.Parse(parts[i]));
-                }
-            }
-            else if (section == 1 && trimmedLine.Contains("<="))
-            {
-                var parts = trimmedLine.Split(' ');
-                List<double> constraint = new List<double>();
-                for (int i = 0; i < parts.Length - 2; i++)
-                {
-                    constraint.Add(double.Parse(parts[i]));
-                }
-                constraints.Add(constraint.ToArray());
-                bounds.Add(double.Parse(parts[^1]));
-            }
-            else if (section == 2 && trimmedLine.Contains("<="))
-            {
-                var parts = trimmedLine.Split(' ');
-                lowerBounds.Add(double.Parse(parts[0]));
-                upperBounds.Add(double.PositiveInfinity); // No upper bound specified in input, assume infinity
+                case "bin":
+                    lowerBounds.Add(0);
+                    upperBounds.Add(1);
+                    break;
+                case "int":
+                    lowerBounds.Add(0);
+                    upperBounds.Add(double.PositiveInfinity);
+                    break;
+                case "urs":
+                    lowerBounds.Add(0);
+                    upperBounds.Add(double.PositiveInfinity);
+                    break;
+                case "+":
+                    lowerBounds.Add(0);
+                    upperBounds.Add(double.PositiveInfinity);
+                    break;
+                case "-":
+                    lowerBounds.Add(double.NegativeInfinity);
+                    upperBounds.Add(double.PositiveInfinity);
+                    break;
+                default:
+                    throw new Exception("Invalid variable type");
             }
         }
 
@@ -184,7 +188,8 @@ namespace LPR381_Project.SolvingMethods
             Constraints = To2DArray(constraints),
             Bounds = bounds.ToArray(),
             LowerBounds = lowerBounds.ToArray(),
-            UpperBounds = upperBounds.ToArray()
+            UpperBounds = upperBounds.ToArray(),
+            Maximize = maximize
         };
     }
 
@@ -211,6 +216,7 @@ class LinearProgram
     public double[] Bounds { get; set; }
     public double[] LowerBounds { get; set; }
     public double[] UpperBounds { get; set; }
+    public bool Maximize { get; set; }
 }
 
 class Node
