@@ -10,6 +10,7 @@ namespace LPR381_Project
     internal class MenuHandler
     {
         public Model model;
+        string outputFilePath = "output.txt";
 
         public MenuHandler(Model model)
         {
@@ -158,6 +159,7 @@ namespace LPR381_Project
                         Console.WriteLine(generateSubProblems);
                         Console.WriteLine();
                         Console.WriteLine(bestSolution);
+                        knapsack.SaveOutputToFile(outputFilePath);
                     }
                     catch (Exception ex)
                     {
