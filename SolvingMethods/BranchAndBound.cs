@@ -1,8 +1,7 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace LPR381_Project.SolvingMethods
 {
@@ -12,6 +11,7 @@ namespace LPR381_Project.SolvingMethods
     {
         string filePath = "input.txt"; // Path to your input file
         string outputFilePath = "output.txt"; // Path to the output file
+        SimplexSolver simplexSolver = new SimplexSolver();
 
         // Read the problem from a file
         LinearProgram lp = ReadProblemFromFile(filePath);
@@ -20,7 +20,7 @@ namespace LPR381_Project.SolvingMethods
         using (StreamWriter writer = new StreamWriter(outputFilePath))
         {
             // Start Branch and Bound
-            BranchAndBound(lp, writer);
+            BranchAndBoundAlgo(lp, writer);
 
             // Ensure all data is written to the file
             writer.Flush();
@@ -29,7 +29,7 @@ namespace LPR381_Project.SolvingMethods
         Console.ReadLine();
     }
 
-    static void BranchAndBound(LinearProgram lp, StreamWriter writer)
+    static void BranchAndBoundAlgo(LinearProgram lp, StreamWriter writer)
     {
         Queue<Node> nodes = new Queue<Node>();
         Node rootNode = new Node(lp.LowerBounds, lp.UpperBounds);
@@ -45,7 +45,7 @@ namespace LPR381_Project.SolvingMethods
             iteration++;
 
             // Solve the relaxed linear programming problem at the current node
-            double[] solution = SimplexSolver.Solve(lp.Objective, lp.Constraints, lp.Bounds, currentNode.LowerBounds, currentNode.UpperBounds);
+            double[] solution = simplexSolver.Solve(lp.Objective, lp.Constraints, lp.Bounds, currentNode.LowerBounds, currentNode.UpperBounds);
             double objectiveValue = CalculateObjective(lp.Objective, solution);
 
             string iterationOutput = $"Iteration {iteration}: Objective = {objectiveValue}, Solution = [{string.Join(", ", solution)}]";
@@ -230,123 +230,4 @@ class Node
         UpperBounds = upperBounds;
     }
 }
-
-class SimplexSolver
-{
-    public static double[] Solve(double[] objective, double[,] constraints, double[] bounds, double[] lowerBounds, double[] upperBounds)
-    {
-        int numVariables = objective.Length;
-        int numConstraints = bounds.Length;
-
-        // Step 1: Initialize the tableau
-        double[,] tableau = InitializeTableau(objective, constraints, bounds, numVariables, numConstraints);
-
-        // Step 2: Perform the Simplex algorithm
-        while (true)
-        {
-            // Step 2a: Identify the entering variable (most negative coefficient in the objective row)
-            int pivotColumn = -1;
-            double mostNegative = 0;
-            for (int j = 0; j < numVariables; j++)
-            {
-                if (tableau[numConstraints, j] < mostNegative)
-                {
-                    mostNegative = tableau[numConstraints, j];
-                    pivotColumn = j;
-                }
-            }
-
-            // If there's no negative coefficient, the optimal solution has been found
-            if (pivotColumn == -1)
-            {
-                break;
-            }
-
-            // Step 2b: Identify the leaving variable (minimum ratio test)
-            int pivotrow = -1;
-            double minRatio = double.PositiveInfinity;
-            for (int i = 0; i < numConstraints; i++)
-            {
-                if (tableau[i, pivotColumn] > 0)
-                {
-                    double ratio = tableau[i, numVariables + numConstraints] / tableau[i, pivotColumn];
-                    if (ratio < minRatio)
-                    {
-                        minRatio = ratio;
-                        pivotrow = i;
-                    }
-                }
-            }
-
-            // If no valid leaving variable is found, the problem is unbounded
-            if (pivotrow == -1)
-            {
-                throw new Exception("The problem is unbounded.");
-            }
-
-            // Step 2c: Pivot
-            Pivot(tableau, pivotColumn, pivotrow, numVariables, numConstraints);
-        }
-
-        // Step 3: Extract the solution
-        double[] solution = new double[numVariables];
-        for (int i = 0; i < numConstraints; i++)
-        {
-            if (tableau[i, numVariables + i] == 1)
-            {
-                solution[i] = tableau[i, numVariables + numConstraints];
-            }
-        }
-
-        return solution;
-    }
-
-    private static double[,] InitializeTableau(double[] objective, double[,] constraints, double[] bounds, int numVariables, int numConstraints)
-    {
-        double[,] tableau = new double[numConstraints + 1, numVariables + numConstraints + 1];
-
-        // Fill the tableau with constraints coefficients and bounds
-        for (int i = 0; i < numConstraints; i++)
-        {
-            for (int j = 0; j < numVariables; j++)
-            {
-                tableau[i, j] = constraints[i, j];
-            }
-            tableau[i, numVariables + i] = 1; // Add slack variables
-            tableau[i, numVariables + numConstraints] = bounds[i];
-        }
-
-        // Fill the objective function row
-        for (int j = 0; j < numVariables; j++)
-        {
-            tableau[numConstraints, j] = -objective[j];
-        }
-
-        return tableau;
-    }
-
-    private static void Pivot(double[,] tableau, int pivotColumn, int pivotrow, int numVariables, int numConstraints)
-    {
-        double pivotElement = tableau[pivotrow, pivotColumn];
-
-        // Normalize the pivot row
-        for (int j = 0; j <= numVariables + numConstraints; j++)
-        {
-            tableau[pivotrow, j] /= pivotElement;
-        }
-
-        // Eliminate the entering column from other rows
-        for (int i = 0; i <= numConstraints; i++)
-        {
-            if (i != pivotrow)
-            {
-                double factor = tableau[i, pivotColumn];
-                for (int j = 0; j <= numVariables + numConstraints; j++)
-                {
-                    tableau[i, j] -= factor * tableau[pivotrow, j];
-                }
-            }
-        }
-    }
-}
-    }
+    }*/

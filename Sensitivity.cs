@@ -91,8 +91,6 @@ namespace LPR381_Project
             }
 
             // Output the results
-            Console.WriteLine("Basic Variables (xBV): " + string.Join(", ", BV.Select(i => $"x{i + 1}")));
-            Console.WriteLine("Non-Basic Variables (xNBV): " + string.Join(", ", NBV.Select(i => $"x{i + 1}")));
             Console.WriteLine("Basic Variable Coefficients (cBV): " + string.Join(", ", cBV));
             Console.WriteLine("Non-Basic Variable Coefficients (cNBV): " + string.Join(", ", cNBV));
 

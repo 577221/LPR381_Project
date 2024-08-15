@@ -17,7 +17,7 @@ namespace LPR381_Project.SolvingMethods
             // Initializing the tableau
             double[,] tableau = InitializeTableau(objective, constraints, bounds, numVariables, numConstraints);
 
-            // Perform Simplex algorithm
+            // Perform the Simplex algorithm
             while (true)
             {
                 // Identify the pivot column (most negative coefficient in the objective row)
@@ -68,20 +68,14 @@ namespace LPR381_Project.SolvingMethods
             double[] solution = new double[numVariables];
             for (int j = 0; j < numVariables; j++)
             {
-                bool isBasic = false;
+                solution[j] = 0;  // Initialize with 0
                 for (int i = 0; i < numConstraints; i++)
                 {
                     if (tableau[i, j] == 1 && tableau[i, numVariables + i] == 1)
                     {
                         solution[j] = tableau[i, numVariables + numConstraints];
-                        isBasic = true;
                         break;
                     }
-                }
-
-                if (!isBasic)
-                {
-                    solution[j] = 0;
                 }
             }
 
