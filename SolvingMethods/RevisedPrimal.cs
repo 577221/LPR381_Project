@@ -142,6 +142,10 @@ namespace LPR381_Project.SolvingMethods
                         ratioIndex++;
                     }
                 }
+                if (pass)
+                {
+
+                }
 
 
                 for (int i = 0; i < hight; i++)
@@ -339,7 +343,7 @@ namespace LPR381_Project.SolvingMethods
 
         }
 
-        public double[,] Invert(double[,] matrix)
+        private double[,] Invert(double[,] matrix)
         {
             int n = matrix.GetLength(0);
             double[,] result = new double[n, n];
@@ -424,6 +428,11 @@ namespace LPR381_Project.SolvingMethods
             return newMatrix;
         }
 
+        public override string ToString()
+        {
+            string myString = string.Empty;
+            return base.ToString();
+        }
     }
 
     
