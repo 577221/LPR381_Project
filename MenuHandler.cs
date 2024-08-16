@@ -96,7 +96,15 @@ namespace LPR381_Project
                     {
                         Primal primal = new Primal(model);
                         primal.Solve();
-                        //Console.WriteLine(primal.ToString());
+                        try
+                        {
+                            primal.SaveOutputToFile(outputFilePath);
+                            Console.WriteLine("Result of primal simplex Solution successfully stored in output.txt!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                        }
                     }
                     catch (Exception ex)
                     {

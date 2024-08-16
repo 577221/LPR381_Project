@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace LPR381_Project.SolvingMethods
@@ -206,6 +207,18 @@ namespace LPR381_Project.SolvingMethods
                 myString += "\n";
             }
             return myString;
+        }
+
+        public void SaveOutputToFile(string outputFilePath)
+        {
+            // Create a StringBuilder to store all outputs
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            // Append ToString() function to the StringBuilder
+            sb.AppendLine(ToString());
+
+            // Write the contents to the specified file
+            File.WriteAllText(outputFilePath, sb.ToString());
         }
     }
 }
