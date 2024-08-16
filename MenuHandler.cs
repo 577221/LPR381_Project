@@ -329,7 +329,7 @@ namespace LPR381_Project
                 case SensitivityMenu.ObjectiveCoefficientChange:
                     Console.WriteLine();
                     Console.WriteLine("Which variable's objective function value would you like to change? (1 for x1, 2 for x2 etc.)");
-                    string objVariable = Console.ReadLine();
+                    int objVariable = int.Parse(Console.ReadLine());
                     Console.WriteLine();
                     Console.WriteLine("Please enter the new value: ");
                     int objValue = int.Parse(Console.ReadLine());
@@ -343,7 +343,7 @@ namespace LPR381_Project
                 case SensitivityMenu.ConstraintCoefficientChange:
                     Console.WriteLine();
                     Console.WriteLine("Which variable's constraint value would you like to change? (1 for x1, 2 for x2 etc.)");
-                    string constraintVariable = Console.ReadLine();
+                    int constraintVariable = int.Parse(Console.ReadLine());
                     Console.WriteLine();
                     Console.WriteLine("Please enter the new value: ");
                     int constraintValue = int.Parse(Console.ReadLine());
@@ -357,7 +357,7 @@ namespace LPR381_Project
                 case SensitivityMenu.RHSChange:
                     Console.WriteLine();
                     Console.WriteLine("Which RHS value would you like to change? (Enter index, e.g., 1 for C1, 2 for C2, etc.)");
-                    string rhsConstraint = Console.ReadLine();
+                    int rhsConstraint = int.Parse(Console.ReadLine());
                     Console.WriteLine();
                     Console.WriteLine("Please enter the new value: ");
                     int rhsValue = int.Parse(Console.ReadLine());
@@ -368,10 +368,26 @@ namespace LPR381_Project
                     break;
 
                 case SensitivityMenu.NewActivity:
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the objective function coefficient for x7: ");
+                    int newObjFunctionValue = int.Parse(Console.ReadLine());
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the constraint 1 coefficient for x7:");
+                    int newConstraintValue = int.Parse(Console.ReadLine());
+                    Console.WriteLine();
+                    Console.WriteLine("New Activity successfully added!");
+                    Console.WriteLine();
+                    Console.WriteLine(sensitivity.DisplayNewActivity());
                     break;
 
                 case SensitivityMenu.NewConstraint:
-                    Console.WriteLine("Please enter the new constraint (form: x1 +/-x2 +/-x3 <=/>= rhs): ");
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the new constraint (form: x1 +/-x2 +/-x3 <=/>=rhs): ");
+                    string newConstraint = Console.ReadLine();
+                    Console.WriteLine();
+                    Console.WriteLine("Constraint successfully added!");
+                    Console.WriteLine();
+                    Console.WriteLine(sensitivity.DisplayNewConstraint());
                     break;
             }
         }

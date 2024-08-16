@@ -376,6 +376,7 @@ namespace LPR381_Project
 
         }
 
+        // Constraint
         public string DislayConstraint()
         {
             // Constraint 1 x1 value
@@ -448,6 +449,127 @@ namespace LPR381_Project
             // Combine the strings
             return $"{table1String}\n{table2String}\n{range}";
 
+        }
+
+        // New Activity
+        public string DisplayNewActivity()
+        {
+            // Add x7
+            // Obj Coefficient = 2
+            // Constraint Coefficient = 5
+            double[,] OptimalTable = {
+            {0.2, 0, 0, 0, 0, 0, 2, 0.2, 0, 1.4, 1.8, 2.2, 0, 2, 15.4},
+            {1.1, 0, 0, 0, 1, 0, 5, 0.1, 0, -0.8, -0.6, -1.4, 0, -1, 0.2},
+            {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {-1.1, 0, 0, 0, 0, 0, 0, -0.1, 0, 0.8, 0.6, 1.4, 1, 1, 0.8},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            // Convert tables to string format
+            string table2String = ConvertActivityToString("Optimal Table", OptimalTable);
+
+            // Combine the strings
+            return $"{table2String}";
+        }
+
+        private string ConvertActivityToString(string tableName, double[,] table)
+        {
+            var result = new System.Text.StringBuilder();
+            result.AppendLine(tableName);
+
+            int rows = table.GetLength(0);
+            int cols = table.GetLength(1);
+
+            // Print table headers
+            result.Append("t-i  ");
+            for (int j = 0; j < cols - 1; j++) // Exclude the last column for the rhs
+            {
+                if (j < 7)
+                {
+                    result.Append($"x{j + 1,-8}");
+                }
+                else
+                {
+                    result.Append($"s{j - 6,-8}"); // Start s variables from s1
+                }
+            }
+            result.AppendLine("rhs");
+
+            // Print table rows
+            string[] rowLabels = { "z", "1", "2", "3", "4", "5", "6", "7" };
+            for (int i = 0; i < rows; i++)
+            {
+                result.Append($"{rowLabels[i],-5}");
+                for (int j = 0; j < cols; j++)
+                {
+                    result.Append($"{table[i, j],-8:F2} ");
+                }
+                result.AppendLine();
+            }
+
+            return result.ToString();
+        }
+
+        // New Constraint
+        public string DisplayNewConstraint()
+        {
+            // Constraint 8 = 8x1 + 4x2 + 6x3 + 2x4 + 5x5 + 3x6 <= 35
+            double[,] OptimalTable = {
+            {0.2, 0, 0, 0, 0, 0, 0.2, 0, 1.4, 1.8, 2.2, 0, 2, 0, 15.4},
+            {1.1, 0, 0, 0, 1, 0, 0.1, 0, -0.8, -0.6, -1.4, 0, -1, 0, 0.2},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {-1.1, 0, 0, 0, 0, 0, -0.1, 0, 0.8, 0.6, 1.4, 1, 1, 0, 0.8},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+            {8, 4, 6, 2, 5, 3, 0, 0, 0, 0, 0, 0, 0, 1, 35}
+            };
+
+            // Convert tables to string format
+            string table2String = ConvertConstraintToString("Optimal Table", OptimalTable);
+
+            // Combine the strings
+            return $"{table2String}";
+        }
+
+        private string ConvertConstraintToString(string tableName, double[,] table)
+        {
+            var result = new System.Text.StringBuilder();
+            result.AppendLine(tableName);
+
+            int rows = table.GetLength(0);
+            int cols = table.GetLength(1);
+
+            // Print table headers
+            result.Append("t-i  ");
+            for (int j = 0; j < cols - 1; j++) // Exclude the last column for the rhs
+            {
+                if (j < 7)
+                {
+                    result.Append($"x{j + 1,-8}");
+                }
+                else
+                {
+                    result.Append($"s{j - 6,-8}"); // Start s variables from s1
+                }
+            }
+            result.AppendLine("rhs");
+
+            // Print table rows
+            string[] rowLabels = { "z", "1", "2", "3", "4", "5", "6", "7", "8" };
+            for (int i = 0; i < rows; i++)
+            {
+                result.Append($"{rowLabels[i],-5}");
+                for (int j = 0; j < cols; j++)
+                {
+                    result.Append($"{table[i, j],-8:F2} ");
+                }
+                result.AppendLine();
+            }
+
+            return result.ToString();
         }
     }
 }
