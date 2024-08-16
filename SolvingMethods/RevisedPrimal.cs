@@ -1,10 +1,7 @@
-﻿using Google.OrTools.ModelBuilder;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace LPR381_Project.SolvingMethods
 {
@@ -24,6 +21,7 @@ namespace LPR381_Project.SolvingMethods
 
 
 
+
         public RevisedPrimal(Model model)
         {
             this.model = model;
@@ -32,13 +30,14 @@ namespace LPR381_Project.SolvingMethods
         public void Solve()
         {
             int iteration = 0;
-            bool solved = false;
+            //bool solved = false;
 
             Console.WriteLine("Given:");
             Console.WriteLine(model.ToString());
+
             Prepare();
             
-
+            /*
             do
             {
                 Console.WriteLine($"Itteration {iteration}");
@@ -59,33 +58,7 @@ namespace LPR381_Project.SolvingMethods
                     }
                 }
                 
-                /*
-                bool pass = false;
-                int enteringIndex = 0; //Is the index of the column that is chosen as the entering variable
-                //Selects the first index value that is valid for the test
-                int tempWidth = NBV.GetLength(1);
-                for (int i = 0; i < width; i++)
-                {
-                    entering[0, i] = entering[0, i] - NBV[0, i];
-                    Console.Write($"{entering[0, i]} ");
-                    Console.WriteLine(entering[0, i]);
-                    if (entering[0, i] > 0)
-                    {
-                        pass = true;
-                        enteringIndex = i;
-                        break;
-                    }
-                    else
-
-                }
-
-                if (!pass)
-                {
-                    solved = true;
-                    Console.WriteLine("Finished");
-                    break;
-                }
-                */
+                
 
 
 
@@ -229,9 +202,130 @@ namespace LPR381_Project.SolvingMethods
                 //Console.WriteLine(ToString());
                 //Console.WriteLine("----------------------\n");
             } while (!solved);
-            
+            */
 
-        }
+            bool optimal = false;
+
+
+            Console.WriteLine("Initial Table:");
+            Console.WriteLine(ToString());
+            while (!optimal)
+            {
+                iteration++; // Increment iteration number
+
+                // Display the current iteration
+                Console.WriteLine($"Iteration {iteration}");
+                Console.WriteLine(ToString());
+
+                int width = C.GetLength(1);
+                double[,] entering = new double[1, width];
+
+                int enteringVar = 0;
+                entering = Multiply(CBVBInv, C);
+
+                for (int i = 0; i < width; i++)
+                {
+                    entering[0, i] = entering[0, i] - NBV[0, i];
+                }
+                // 1. Find the entering variable (most negative value in the objective row)
+                if (model.ProblemType == "max")
+                {
+                    //This part of the code is called if the problem is a maximisation problem
+                    for (int i = 1; i < entering.GetLength(1); i++) // Start from 1 to skip the RHS column
+                    {
+                        if (entering[0, i] < entering[0, enteringVar])
+                        {
+                            enteringVar = i;
+                        }
+                    }
+
+                    // If all values are non-negative, the current solution is optimal
+                    if (entering[0, enteringVar] >= 0)
+                    {
+                        optimal = true;
+                        continue;
+                    }
+                }
+                else//Runs if problem type is min
+                {
+                    //This part of the code is called if the problem is a minimisation problem
+                    for (int i = 1; i < entering.GetLength(1); i++) // Start from 1 to skip the RHS column
+                    {
+                        if (entering[0, i] > entering[0, enteringVar])
+                        {
+                            enteringVar = i;
+                        }
+                    }
+
+                    // If all values are negative, the current solution is optimal
+                    if (entering[0, enteringVar] <= 0)
+                    {
+                        optimal = true;
+                        continue;
+                    }
+                }
+
+                // 2. Find the exiting variable using the ratio test
+                //2.1 Calculates the values for the constraint column that contains the leaving variable
+                int hight = C.GetLength(0);
+                double[,] a = new double[hight, 1];
+                for (int i = 0; i < hight; i++)
+                {
+                    a[i, 0] = C[i, enteringVar];
+                }
+                double[,] myCol = new double[hight, 1];
+                myCol = Multiply(B, a);
+
+                //Calculates the RHS variables
+                RHS = Multiply(B, RHS);
+               
+                int exiting = -1;
+                if (model.ProblemType == "max")
+                {
+                    double minRatio = double.MaxValue;
+
+                    for (int i = 0; i < C.GetLength(0); i++)
+                    {
+                        if ((C[i, 0] > 0) && (RHS[i, 0] > 0)) // Avoid division by zero
+                        {
+                            double ratio = RHS[i, 0] / C[i, enteringVar];
+                            if (ratio < minRatio)
+                            {
+                                minRatio = ratio;
+                                exiting = i;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    double minRatio = double.MinValue;
+
+                    for (int i = 0; i < C.GetLength(0); i++)
+                    {
+                        if (C[i, enteringVar] < 0) // Avoid division by zero
+                        {
+                            double ratio = RHS[i, 0] / C[i, enteringVar];
+                            if (ratio > minRatio)
+                            {
+                                minRatio = ratio;
+                                exiting = i;
+                            }
+                        }
+                    }
+                }
+
+                if (exiting == -1)
+                {
+                    throw new InvalidOperationException("Unbounded solution.");
+                }
+
+                // 3. Pivot around the exiting variable
+                Pivot(exiting, enteringVar);
+
+            }
+            
+            }
 
         private void Prepare()
         {
@@ -259,76 +353,23 @@ namespace LPR381_Project.SolvingMethods
                 NBV[0, i] = model.ObjFunction[i];
             }
 
-            //Prints the values of B to console
-            Console.WriteLine("B: ");
-            for (int i = 0; i < B.GetLength(0); i++)
-            {
-                for (int j = 0;  j< B.GetLength(1); j++)
-                {
-                    Console.Write($"{B[i, j]} ");
-                }
-                Console.WriteLine();
-            }
-
-            //Prints the values of NBV to console
-            Console.WriteLine("NBV: ");
-            for (int i = 0; i < NBV.GetLength(0); i++)
-            {
-                for (int j = 0; j < NBV.GetLength(1); j++)
-                {
-                    Console.Write($"{NBV[i, j]} ");
-                }
-                Console.WriteLine();
-            }
-            //Prints the values of CBV to console
-            Console.WriteLine("CBV: ");
-            for (int i = 0; i < CBV.GetLength(0); i++)
-            {
-                for (int j = 0; j < CBV.GetLength(1); j++)
-                {
-                    Console.Write($"{CBV[i, j]} ");
-                }
-                Console.WriteLine();
-            }
-
             //Inverts B and assigns it to  BInv
             BInv = Invert(B);
-            Console.WriteLine("BInv:");
-            for(int i = 0; i < BInv.GetLength(1); i++)
-            {
-                for(int j = 0;j < BInv.GetLength(0); j++)
-                {
-                    Console.Write($"{BInv[i, j]} ");
-                }
-                Console.WriteLine("");
-            }
 
 
             //Multiplies CBV and Binv
             CBVBInv = Multiply(CBV, BInv);
-            Console.WriteLine("CBVBInv");
-            for (int i = 0; i < CBVBInv.GetLength(0); i++)
-            {
-                for(int j = 0;j < CBVBInv.GetLength(1); j++)
-                {
-                    Console.Write($"{CBVBInv[i, j]} ");
-                }
-                Console.WriteLine();
-            }
 
             //Gets C
             int height = model.ConstraintsCoefficients.GetLength(0);
             int lent = model.ConstraintsCoefficients.GetLength(1);
             C = new double[height, lent];
-            Console.WriteLine("C: ");
-            for (int i = 0;i < height; i++)
+            for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < lent; j++)
                 {
                     C[i, j] = model.ConstraintsCoefficients[i, j];
-                    Console.Write($"{C[i, j]} ");
                 }
-                Console.WriteLine() ;
             }
 
             //Gets the initial values for thr RHS values
@@ -336,14 +377,8 @@ namespace LPR381_Project.SolvingMethods
             for (int i = 0; i < height; i++)
             {
                 RHS[i, 0] = model.RhsConstraints[i];
-                //Console.WriteLine($"{a[i, 0]}");
             }
-            Console.WriteLine("RHS:");
-            for (int i = 0; i < RHS.GetLength(0); i++)
-            {
-                Console.WriteLine(RHS[i, 0]);
-            }
-
+            
         }
 
         private double[,] Invert(double[,] matrix)
@@ -430,12 +465,89 @@ namespace LPR381_Project.SolvingMethods
 
             return newMatrix;
         }
+        
+        private void Pivot(int exitingRow, int enteringColumn)
+        {
+            int hight = C.GetLength(0);
+            double temp = 0;
+            //Saves the value of the leaving variable
+            double myRatio = C[exitingRow, enteringColumn];
+            //Updates B and then Inserts new values into the column that contains the leaving variable
+            for (int i = 0; i < hight; i++)
+            {
+                temp = B[i, exitingRow];
+                B[i, exitingRow] = (C[i, enteringColumn] / myRatio) * -1;
+                C[i, exitingRow] = temp;
+            }
+            temp = CBV[0, exitingRow];
+            CBV[0, exitingRow] = NBV[0, enteringColumn];
+            NBV[0, enteringColumn] = temp;
 
+            BInv = Invert(B);
+        }
+        
         public override string ToString()
         {
-            string myString = string.Empty;
-            return base.ToString();
+            int numConstraints = model.ConstraintsCoefficients.GetLength(0);
+            int numVariables = model.ConstraintsCoefficients.GetLength(1);
+
+            // Create headers
+            string[] headers = new string[numVariables + numConstraints + 1]; // Including RHS
+            for (int i = 0; i < numVariables; i++)
+            {
+                headers[i] = $"x{i + 1}";
+            }
+            for (int i = 0; i < numConstraints; i++)
+            {
+                headers[numVariables + i] = $"s{i + 1}"; // Slack variables
+            }
+            headers[headers.Length - 1] = "RHS"; // Last column for RHS
+
+            // Create the header row with padding
+            string headerRow = string.Join(" | ", headers.Select(h => h.PadLeft(7)));
+            string separator = new string('-', headerRow.Length);
+
+            // Convert tableau to string with headers and iteration
+            string myString = $"{headerRow}\n{separator}\n";
+
+            for (int i = 0; i < NBV.GetLength(1); i++)
+            {
+                myString += NBV[0, i].ToString("F2").PadLeft(10);                
+            }
+            for (int i = 0; i < CBV.GetLength(1); i++)
+            {
+                myString += CBV[0, i].ToString("F2").PadLeft(10);
+            }
+            myString += "\n";
+
+            for (int i = 0; i < C.GetLength(0); i++)
+            {
+                for (int j = 0; j < C.GetLength(1); j++)
+                {
+                    myString += C[i, j].ToString("F2").PadLeft(10);
+                }
+                for (int j = 0; j < B.GetLength(1); j++)
+                {
+                    myString += B[i, j].ToString("F2").PadLeft(10);
+                }
+                myString += RHS[i, 0].ToString("F2").PadLeft(10); 
+                myString += "\n";
+            }
+            return myString;
         }
+
+        public void SaveOutputToFile(string outputFilePath)
+        {
+            // Create a StringBuilder to store all outputs
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            // Append ToString() function to the StringBuilder
+            sb.AppendLine(ToString());
+
+            // Write the contents to the specified file
+            File.WriteAllText(outputFilePath, sb.ToString());
+        }
+
     }
 
     

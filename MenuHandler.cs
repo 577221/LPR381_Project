@@ -118,6 +118,17 @@ namespace LPR381_Project
                     Console.WriteLine("-----------------------");
                     RevisedPrimal revised = new RevisedPrimal(model);
                     revised.Solve();
+
+                    try
+                    {
+                        revised.SaveOutputToFile(outputFilePath);
+                        Console.WriteLine("Result of primal simplex Solution successfully stored in output.txt!");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
+
                     break;
 
                 case Menu.BranchAndBound:
