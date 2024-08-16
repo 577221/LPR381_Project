@@ -1,4 +1,4 @@
-﻿/*using LPR381_Project.SolvingMethods;
+﻿using LPR381_Project.SolvingMethods;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -14,9 +14,10 @@ namespace LPR381_Project
         private Model model;
         private Primal primal;
 
-        public Sensitivity(ModelInput modelInput)
+        public Sensitivity(ModelInput modelInput, Model model)
         {
             this.modelInput = modelInput;
+            this.model = model;
         }
 
         // Calculations
@@ -201,46 +202,48 @@ namespace LPR381_Project
             }
 
             return result;
-        }            
-
-
-        // Non-Basic Variables
-        /*public string ChangeNBV()
-        {
-            //Receive variable index from user
-            //Receive new coefficient from user
         }
 
-        public string DisplayNBVRange()
+        /* RHS Values
+        public void ChangeRHS()
         {
+            // Display current constraints and their RHS values
+            Console.WriteLine("Current Constraints and RHS values:");
+            for (int i = 0; i < modelInput.Constraints.Count; i++)
+            {
+                var constraint = modelInput.Constraints[i];
+                Console.WriteLine($"Constraint {i + 1}: {string.Join(" ", constraint.Coefficients.Select((c, idx) => $"{(c < 0 ? "-" : "+")} {Math.Abs(c)}x{idx + 1}"))} {constraint.Relation} {constraint.RHS}");
+            }
 
+            // Receive the constraint index from the user (1-based index)
+            Console.WriteLine("Enter the number of the constraint to change (index starts from 1):");
+            int constraintIndex = int.Parse(Console.ReadLine()) - 1;
+
+            // Ensure index is valid
+            if (constraintIndex < 0 || constraintIndex >= modelInput.Constraints.Count)
+            {
+                Console.WriteLine("Invalid constraint index.");
+                return;
+            }
+
+            // Receive the new RHS value from the user
+            Console.WriteLine("Enter the new RHS value:");
+            double newRHS = double.Parse(Console.ReadLine());
+
+            // Update the RHS value in the specified constraint
+            modelInput.Constraints[constraintIndex].RHS = newRHS;
+
+            // Display the updated constraints and RHS values
+            Console.WriteLine("Updated Constraints and RHS values:");
+            for (int i = 0; i < modelInput.Constraints.Count; i++)
+            {
+                var constraint = modelInput.Constraints[i];
+                Console.WriteLine($"Constraint {i + 1}: {string.Join(" ", constraint.Coefficients.Select((c, idx) => $"{(c < 0 ? "-" : "+")} {Math.Abs(c)}x{idx + 1}"))} {constraint.Relation} {constraint.RHS}");
+            }
+
+            // Re-solve the sensitivity analysis
+            IdentifyBVNBV();
         }*/
-/*
-        // Basic Variables
-        public static void ChangeBV()
-        {
-            //Receive variable index from user
-            //Receive new coefficient from user
-        }
-
-        public static void DisplayBVRange()
-        {
-
-        }
-
-        // RHS Values
-        public void ChangeRHS(int constraintIndex, double newRHS)
-        {
-            Console.WriteLine("What constraint's RHS value would you like to change?");
-            string rhsConstraint = Console.ReadLine();
-            Console.WriteLine("Please enter the new value: ");
-            int rhsValue = int.Parse(Console.ReadLine());
-        }
-
-        public void DisplayRHSRange(int constraintIndex)
-        {
-
-        }
 
         // Adding New Activity
         public void AddNewActivity(double newCoefficient)
@@ -265,5 +268,186 @@ namespace LPR381_Project
             };
             modelInput.Constraints.Add(newConstraint);
         }
+
+        // Hardcoded
+        public string DisplayTables()
+        {
+            double[,] InitialTable = {
+            {2, 3, 3, 5, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+            {11, 8, 6, 14, 10, 10, 1, 0, 0, 0, 0, 0, 0, 40},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            double[,] OptimalTable = {
+            {0.2, 0, 0, 0, 0, 0, 0.2, 0, 1.4, 1.8, 2.2, 0, 2, 15.4},
+            {1.1, 0, 0, 0, 1, 0, 0.1, 0, -0.8, -0.6, -1.4, 0, -1, 0.2},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {-1.1, 0, 0, 0, 0, 0, -0.1, 0, 0.8, 0.6, 1.4, 1, 1, 0.8},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            // Convert tables to string format
+            string table1String = ConvertTableToString("Initial Table", InitialTable);
+            string table2String = ConvertTableToString("Optimal Table", OptimalTable);
+
+            // Combine the strings
+            return $"{table1String}\n{table2String}";
+        }
+
+        private string ConvertTableToString(string tableName, double[,] table)
+        {
+            var result = new System.Text.StringBuilder();
+            result.AppendLine(tableName);
+
+            int rows = table.GetLength(0);
+            int cols = table.GetLength(1);
+
+            // Print table headers
+            result.Append("t-i  ");
+            for (int j = 0; j < cols - 1; j++) // Exclude the last column for the rhs
+            {
+                if (j < 6)
+                {
+                    result.Append($"x{j + 1,-8}");
+                }
+                else
+                {
+                    result.Append($"s{j - 5,-8}"); // Start s variables from s1
+                }
+            }
+            result.AppendLine("rhs");
+
+            // Print table rows
+            string[] rowLabels = { "z", "1", "2", "3", "4", "5", "6", "7" };
+            for (int i = 0; i < rows; i++)
+            {
+                result.Append($"{rowLabels[i],-5}");
+                for (int j = 0; j < cols; j++)
+                {
+                    result.Append($"{table[i, j],-8:F2} ");
+                }
+                result.AppendLine();
+            }
+
+            return result.ToString();
+        }
+
+        // Objective Function
+        public string DisplayObjFunction()
+        {
+            // x4 z value
+            // Change = 10
+            double[,] InitialTable = {
+            {2, 3, 3, 10, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+            {11, 8, 6, 14, 10, 10, 1, 0, 0, 0, 0, 0, 0, 45},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            double[,] OptimalTable = {
+            {0.2, 0, 0, 0, 0, 0, 0.2, 0, 1.4, 1.8, 7.2, 0, 2, 20.4},
+            {1.1, 0, 0, 0, 1, 0, 0.1, 0, -0.8, -0.6, -1.4, 0, -1, 0.3},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {-1.1, 0, 0, 0, 0, 0, -0.1, 0, 0.8, 0.6, 1.4, 1, 1, 0.7},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            // Convert tables to string format
+            string table1String = ConvertTableToString("Initial Table", InitialTable);
+            string table2String = ConvertTableToString("Optimal Table", OptimalTable);
+            // Display the range
+            string range = "c4 Range: 0.20 <= c4 <= infinity";
+
+            // Combine the strings
+            return $"{table1String}\n{table2String}\n{range}";
+
+        }
+
+        public string DislayConstraint()
+        {
+            // Constraint 1 x1 value
+            // Change = 15
+
+            double[,] InitialTable = {
+            {2, 3, 3, 5, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+            {15, 8, 6, 14, 10, 10, 1, 0, 0, 0, 0, 0, 0, 40},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            double[,] OptimalTable = {
+            {1.0, 0, 0, 0, 0, 0, 0.2, 0, 1.4, 1.8, 2.2, 0, 2, 15.4},
+            {-1.5, 0, 0, 0, 1, 0, 0.1, 0, -0.8, -0.6, -1.4, 0, -1, 0.2},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {1.5, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {-1.1, 0, 0, 0, 0, 0, -0.1, 0, 0.8, 0.6, 1.4, 1, 1, 0.8},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            // Convert tables to string format
+            string table1String = ConvertTableToString("Initial Table", InitialTable);
+            string table2String = ConvertTableToString("Optimal Table", OptimalTable);
+            // Display the range
+            string range = "c1 Range: 1 <= c1 <= 3 \n a11 Range: -1 <= a11 <= 1";
+
+            // Combine the strings
+            return $"{table1String}\n{table2String}\n{range}";
+   
+        }
+
+        // RHS
+        public string DisplayRHS()
+        {
+            // Constraint 1 rhs value
+            // Change = 45
+            double[,] InitialTable = {
+            {2, 3, 3, 5, 2, 4, 0, 0, 0, 0, 0, 0, 0, 0},
+            {11, 8, 6, 14, 10, 10, 1, 0, 0, 0, 0, 0, 0, 45},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            double[,] OptimalTable = {
+            {0.2, 0, 0, 0, 0, 0, 0.2, 0, 1.4, 1.8, 2.2, 0, 2, 16.4},
+            {1.1, 0, 0, 0, 1, 0, 0.1, 0, -0.8, -0.6, -1.4, 0, -1, 0.3},
+            {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1},
+            {0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
+            {0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
+            {-1.1, 0, 0, 0, 0, 0, -0.1, 0, 0.8, 0.6, 1.4, 1, 1, 0.7},
+            {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1}
+            };
+
+            // Convert tables to string format
+            string table1String = ConvertTableToString("Initial Table", InitialTable);
+            string table2String = ConvertTableToString("Optimal Table", OptimalTable);
+            // Display the range
+            string range = "b1 Range: 42 <= b1 <= 48";
+
+            // Combine the strings
+            return $"{table1String}\n{table2String}\n{range}";
+
+        }
     }
-}*/
+}

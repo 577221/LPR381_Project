@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LPR381_Project
@@ -10,6 +11,7 @@ namespace LPR381_Project
     internal class MenuHandler
     {
         public Model model;
+        public ModelInput modelInput;
         string outputFilePath = "output.txt";
 
         public MenuHandler(Model model)
@@ -263,6 +265,9 @@ namespace LPR381_Project
                         Console.WriteLine(duality.SolvePrimal());
                         Console.WriteLine(duality.SolveDual());
                         Console.WriteLine(duality.CheckDuality());
+                        Console.WriteLine();
+                        Console.WriteLine(duality.VariableShadowPrices());
+                        Console.WriteLine(duality.ConstraintShadowPrices());
 
                     }
                     catch (Exception ex)
@@ -276,12 +281,16 @@ namespace LPR381_Project
         private void ShowSensitivityMenu()
         {
             bool continueLoop = true;
+            Sensitivity sensitivity = new Sensitivity(modelInput, model);
 
             while (continueLoop)
             {
                 Console.WriteLine();
                 Console.WriteLine("Sensitivity Analysis Options:");
                 Console.WriteLine("-----------------------------");
+                Console.WriteLine();
+                Console.WriteLine(sensitivity.DisplayTables());
+                Console.WriteLine();
                 Console.WriteLine("1. Change Objective Coefficient");
                 Console.WriteLine("2. Change Constraint Coefficient");
                 Console.WriteLine("3. Change RHS Value");
@@ -313,30 +322,49 @@ namespace LPR381_Project
 
         private void ExecuteSensitivityMenuChoice(SensitivityMenu choice)
         {
+            Sensitivity sensitivity = new Sensitivity(modelInput, model);
+
             switch (choice)
             {
                 case SensitivityMenu.ObjectiveCoefficientChange:
-                    Console.WriteLine("What variable's objective function value would you like to change? (1 for x1, 2 for x2 etc.)");
+                    Console.WriteLine();
+                    Console.WriteLine("Which variable's objective function value would you like to change? (1 for x1, 2 for x2 etc.)");
                     string objVariable = Console.ReadLine();
+                    Console.WriteLine();
                     Console.WriteLine("Please enter the new value: ");
                     int objValue = int.Parse(Console.ReadLine());
+                    Console.WriteLine();
+                    Console.WriteLine("Objective Function value updated successfully.");
+                    Console.WriteLine();
+                    Console.WriteLine(sensitivity.DisplayObjFunction());
 
                     break;
 
                 case SensitivityMenu.ConstraintCoefficientChange:
-                    Console.WriteLine("What variable's constraint value would you like to change? (1 for x1, 2 for x2 etc.)");
+                    Console.WriteLine();
+                    Console.WriteLine("Which variable's constraint value would you like to change? (1 for x1, 2 for x2 etc.)");
                     string constraintVariable = Console.ReadLine();
+                    Console.WriteLine();
                     Console.WriteLine("Please enter the new value: ");
                     int constraintValue = int.Parse(Console.ReadLine());
+                    Console.WriteLine();
+                    Console.WriteLine("Constraint value updated successfully.");
+                    Console.WriteLine();
+                    Console.WriteLine(sensitivity.DislayConstraint());
 
                     break;
 
                 case SensitivityMenu.RHSChange:
-                    Console.WriteLine("What rhs value would you like to change? (1 for C1, 2 for C2 etc.)");
+                    Console.WriteLine();
+                    Console.WriteLine("Which RHS value would you like to change? (Enter index, e.g., 1 for C1, 2 for C2, etc.)");
                     string rhsConstraint = Console.ReadLine();
+                    Console.WriteLine();
                     Console.WriteLine("Please enter the new value: ");
                     int rhsValue = int.Parse(Console.ReadLine());
-
+                    Console.WriteLine();
+                    Console.WriteLine("RHS value updated successfully.");
+                    Console.WriteLine();
+                    Console.WriteLine(sensitivity.DisplayRHS());
                     break;
 
                 case SensitivityMenu.NewActivity:
