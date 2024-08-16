@@ -294,10 +294,10 @@ namespace LPR381_Project
             while (continueLoop)
             {
                 Console.WriteLine();
+                Console.WriteLine(sensitivity.DisplayTables());
+                Console.WriteLine();
                 Console.WriteLine("Sensitivity Analysis Options:");
                 Console.WriteLine("-----------------------------");
-                Console.WriteLine();
-                Console.WriteLine(sensitivity.DisplayTables());
                 Console.WriteLine();
                 Console.WriteLine("1. Change Objective Coefficient");
                 Console.WriteLine("2. Change Constraint Coefficient");

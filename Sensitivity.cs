@@ -546,13 +546,13 @@ namespace LPR381_Project
             result.Append("t-i  ");
             for (int j = 0; j < cols - 1; j++) // Exclude the last column for the rhs
             {
-                if (j < 7)
+                if (j < 6)
                 {
                     result.Append($"x{j + 1,-8}");
                 }
                 else
                 {
-                    result.Append($"s{j - 6,-8}"); // Start s variables from s1
+                    result.Append($"s{j - 5,-8}"); // Start s variables from s1
                 }
             }
             result.AppendLine("rhs");
