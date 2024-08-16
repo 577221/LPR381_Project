@@ -141,7 +141,7 @@ namespace LPR381_Project
                 Console.WriteLine($"s{i + 1} = {solverWrapper.GetVariableValue(solverWrapper.DecisionVariableCount + i)}");
             }
 
-            Console.WriteLine();  // Add a blank line for readability
+            Console.WriteLine();
         }
 
         private void WriteSolutionToFile(SolverWrapper solverWrapper, int iteration, bool feasible)
@@ -167,8 +167,8 @@ namespace LPR381_Project
                     writer.WriteLine($"s{i + 1} = {solverWrapper.GetVariableValue(solverWrapper.DecisionVariableCount + i)}");
                 }
 
-                writer.WriteLine();  // Add a blank line for readability
+                writer.WriteLine();
             }
         }
     }
-}*/
+}
