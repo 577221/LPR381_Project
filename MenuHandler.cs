@@ -106,7 +106,8 @@ namespace LPR381_Project
                     Console.WriteLine();
                     Console.WriteLine("Revised Primal Simplex:");
                     Console.WriteLine("-----------------------");
-
+                    RevisedPrimal revised = new RevisedPrimal(model);
+                    revised.Solve();
                     break;
 
                 case Menu.BranchAndBound:
