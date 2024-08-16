@@ -14,6 +14,7 @@ namespace LPR381_Project
 
             try
             {
+                fileHandler.ReadFile();
                 fileHandler.StoreFileData();
                 Console.Clear();
                 Console.WriteLine(model.ToString());

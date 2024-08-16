@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -66,4 +66,4 @@ public class CustomConstraint
     public List<double> Coefficients { get; set; } = new List<double>();
     public string Relation { get; set; } = string.Empty;
     public double RHS { get; set; }
-}
+}*/

@@ -61,7 +61,7 @@ namespace LPR381_Project
                 Console.WriteLine("6. Other");
                 Console.WriteLine("7. Exit");
                 Console.WriteLine();
-                Console.WriteLine("Please enter anumber between 1 and 7:");
+                Console.WriteLine("Please enter a number between 1 and 7:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
@@ -122,8 +122,8 @@ namespace LPR381_Project
                     Console.WriteLine("----------------------");
                     try
                     {
-                        CuttingPlane cuttingPlane = new CuttingPlane();
-                        cuttingPlane.ApplyCuttingPlane();  // Apply the Gomory Cutting Plane algorithm
+                        //CuttingPlane cuttingPlane = new CuttingPlane();
+                        //cuttingPlane.ApplyCuttingPlane();  // Apply the Gomory Cutting Plane algorithm
                     }
                     catch (Exception ex)
                     {
@@ -159,7 +159,15 @@ namespace LPR381_Project
                         Console.WriteLine(generateSubProblems);
                         Console.WriteLine();
                         Console.WriteLine(bestSolution);
-                        knapsack.SaveOutputToFile(outputFilePath);
+                        try
+                        {
+                            knapsack.SaveOutputToFile(outputFilePath);
+                            Console.WriteLine("Content of Knapsack Solution successfully stored in output.txt!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error: {ex.Message}");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -234,8 +242,13 @@ namespace LPR381_Project
 
                     try
                     {
-                        Model model = new Model();
-                        Duality duality = new Duality(model);
+                        Duality duality = new Duality(
+                            model.ProblemType,
+                            model.ObjFunction,
+                            model.ConstraintsCoefficients,
+                            model.OperatorsConstraints,
+                            model.RhsConstraints,
+                            model.SignRestrictions);
                         Console.WriteLine(duality.PrimalForm());
                         Model dualModel = duality.ApplyDuality();
                         Console.WriteLine(duality.DualForm(dualModel));

@@ -1,4 +1,4 @@
-﻿using LPR381_Project.SolvingMethods;
+﻿/*using LPR381_Project.SolvingMethods;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -215,7 +215,7 @@ namespace LPR381_Project
         {
 
         }*/
-
+/*
         // Basic Variables
         public static void ChangeBV()
         {
@@ -266,4 +266,4 @@ namespace LPR381_Project
             modelInput.Constraints.Add(newConstraint);
         }
     }
-}
+}*/

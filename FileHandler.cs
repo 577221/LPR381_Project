@@ -43,8 +43,21 @@ namespace LPR381_Project
             if (lines.Length > 0)
             {
                 var firstLineParts = lines[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                model.ProblemType = firstLineParts[0];
-                model.ObjFunction = firstLineParts.Select(int.Parse).ToArray();
+
+                // Ensure that the objective function and problem type are parsed correctly
+                if (firstLineParts.Length > 1)
+                {
+                    model.ProblemType = firstLineParts[0];
+                    model.ObjFunction = firstLineParts.Skip(1).Select(int.Parse).ToArray();
+
+                    // Log the parsed objective function
+                    Console.WriteLine("Parsed Objective Function:");
+                    Console.WriteLine(string.Join(" ", model.ObjFunction));
+                }
+                else
+                {
+                    throw new InvalidOperationException("The objective function is not properly formatted.");
+                }
             }
             else
             {
@@ -67,6 +80,7 @@ namespace LPR381_Project
                 throw new InvalidOperationException("No constraints found in the file.");
             }
 
+            // Initialize the model's constraint properties
             model.ConstraintsCoefficients = new int[numConstraints, model.ObjFunction.Length];
             model.OperatorsConstraints = new string[numConstraints];
             model.RhsConstraints = new int[numConstraints];
@@ -76,7 +90,7 @@ namespace LPR381_Project
                 var constraintParts = constraintLines[i].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 if (constraintParts.Length != model.ObjFunction.Length + 1)
                 {
-                    throw new InvalidOperationException("Mismatch between number of constraints and objective function elements.");
+                    throw new InvalidOperationException("Mismatch between the number of constraint coefficients and objective function elements.");
                 }
 
                 for (int j = 0; j < model.ObjFunction.Length; j++)
@@ -97,13 +111,36 @@ namespace LPR381_Project
                     throw new InvalidOperationException($"Invalid RHS constraint at line {constraintStartLine + i + 1}, position {constraintParts.Length}.");
                 }
             }
+
+            // Log the parsed constraints
+            Console.WriteLine("Parsed Constraints:");
+            for (int i = 0; i < numConstraints; i++)
+            {
+                for (int j = 0; j < model.ObjFunction.Length; j++)
+                {
+                    Console.Write(model.ConstraintsCoefficients[i, j] + " ");
+                }
+                Console.WriteLine(model.OperatorsConstraints[i] + model.RhsConstraints[i]);
+            }
         }
 
         public void ParseSignRestrictions(string fileContent)
         {
             var lines = fileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.None);
             var signRestrictionsLine = lines[lines.Length - 1];
-            model.SignRestrictions = signRestrictionsLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (!string.IsNullOrWhiteSpace(signRestrictionsLine))
+            {
+                model.SignRestrictions = signRestrictionsLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Log the parsed sign restrictions
+                Console.WriteLine("Parsed Sign Restrictions:");
+                Console.WriteLine(string.Join(" ", model.SignRestrictions));
+            }
+            else
+            {
+                throw new InvalidOperationException("Sign restrictions line is empty.");
+            }
         }
     }
 }

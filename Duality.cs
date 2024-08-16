@@ -7,38 +7,51 @@ namespace LPR381_Project
 {
     internal class Duality
     {
-        private Model model;
+        private string problemType;
+        private int[] objFunction;
+        private int[,] constraintsCoefficients;
+        private string[] operatorsConstraints;
+        private int[] rhsConstraints;
+        private string[] signRestrictions;
 
-        public Duality(Model model)
+        public string ProblemType { get => problemType; set => problemType = value; }
+        public int[] ObjFunction { get => objFunction; set => objFunction = value; }
+        public int[,] ConstraintsCoefficients { get => constraintsCoefficients; set => constraintsCoefficients = value; }
+        public string[] OperatorsConstraints { get => operatorsConstraints; set => operatorsConstraints = value; }
+        public int[] RhsConstraints { get => rhsConstraints; set => rhsConstraints = value; }
+        public string[] SignRestrictions { get => signRestrictions; set => signRestrictions = value; }
+
+        public Duality(string problemType, int[] objFunction, int[,] constraintsCoefficients, string[] operatorsConstraints, int[] rhsConstraints, string[] signRestrictions)
         {
-            // Ensure the passed model is used
-            this.model = model ?? throw new ArgumentNullException(nameof(model));
+            this.ProblemType = problemType;
+            this.ObjFunction = objFunction;
+            this.ConstraintsCoefficients = constraintsCoefficients;
+            this.OperatorsConstraints = operatorsConstraints;
+            this.RhsConstraints = rhsConstraints;
+            this.SignRestrictions = signRestrictions;
         }
 
         public string PrimalForm()
         {
-            if (model == null || model.ConstraintsCoefficients == null)
-                throw new InvalidOperationException("Model or ConstraintsCoefficients are not initialized.");
-
             StringBuilder constraintsStr = new StringBuilder();
-            for (int i = 0; i < model.ConstraintsCoefficients.GetLength(0); i++)
+            for (int i = 0; i < ConstraintsCoefficients.GetLength(0); i++)
             {
                 // Modify the constraints string to include variable indices (starting from 1)
-                string constraintStr = string.Join(" + ", Enumerable.Range(0, model.ConstraintsCoefficients.GetLength(1))
-                    .Select(j => $"{model.ConstraintsCoefficients[i, j]}x{j + 1}"));
+                string constraintStr = string.Join(" + ", Enumerable.Range(0, ConstraintsCoefficients.GetLength(1))
+                    .Select(j => $"{ConstraintsCoefficients[i, j]}x{j + 1}"));
 
-                constraintsStr.Append($"{constraintStr} {model.OperatorsConstraints[i]} {model.RhsConstraints[i]}\n");
+                constraintsStr.Append($"{constraintStr} {OperatorsConstraints[i]} {RhsConstraints[i]}\n");
             }
 
             // Modify the objective function string to include variable indices (starting from 1)
-            string objectiveFunctionStr = string.Join(" + ", model.ObjFunction
+            string objectiveFunctionStr = string.Join(" + ", ObjFunction
                 .Select((coef, index) => $"{coef}x{index + 1}"));
 
             return $"Primal Form:\n" +
                    $"------------\n" +
-                   $"{model.ProblemType} z = {objectiveFunctionStr}\n" +
+                   $"{ProblemType} z = {objectiveFunctionStr}\n" +
                    $"s.t. {constraintsStr}" +
-                   $"     {string.Join(" ", model.SignRestrictions)}\n";
+                   $"     {string.Join(" ", SignRestrictions)}\n";
         }
 
         public string DualForm(Model dualModel)
@@ -75,25 +88,25 @@ namespace LPR381_Project
             // Create a new dual model
             Model dualModel = new Model
             {
-                ProblemType = (model.ProblemType == "max") ? "min" : "max",
-                ObjFunction = new int[model.ConstraintsCoefficients.GetLength(1)],
-                RhsConstraints = new int[model.ObjFunction.Length]
+                ProblemType = (ProblemType == "max") ? "min" : "max",
+                ObjFunction = new int[ConstraintsCoefficients.GetLength(1)],
+                RhsConstraints = new int[ObjFunction.Length]
             };
 
             // Copy RHS constraints to Objective Function
-            for (int i = 0; i < model.RhsConstraints.Length; i++)
+            for (int i = 0; i < RhsConstraints.Length; i++)
             {
-                dualModel.ObjFunction[i] = model.RhsConstraints[i];
+                dualModel.ObjFunction[i] = RhsConstraints[i];
             }
 
             // Copy Objective Function to RHS constraints
-            for (int i = 0; i < model.ObjFunction.Length; i++)
+            for (int i = 0; i < ObjFunction.Length; i++)
             {
-                dualModel.RhsConstraints[i] = model.ObjFunction[i];
+                dualModel.RhsConstraints[i] = ObjFunction[i];
             }
 
-            int numberOfConstraints = model.ConstraintsCoefficients.GetLength(0);
-            int numberOfVariables = model.ConstraintsCoefficients.GetLength(1);
+            int numberOfConstraints = ConstraintsCoefficients.GetLength(0);
+            int numberOfVariables = ConstraintsCoefficients.GetLength(1);
 
             dualModel.ConstraintsCoefficients = new int[numberOfVariables, numberOfConstraints];
             dualModel.OperatorsConstraints = new string[numberOfVariables];
@@ -104,29 +117,19 @@ namespace LPR381_Project
             {
                 for (int j = 0; j < numberOfConstraints; j++)
                 {
-                    dualModel.ConstraintsCoefficients[i, j] = model.ConstraintsCoefficients[j, i];
+                    dualModel.ConstraintsCoefficients[i, j] = ConstraintsCoefficients[j, i];
                 }
             }
 
-            // Convert primal constraint operators to dual sign restrictions
-            for (int j = 0; j < numberOfConstraints; j++)
+            // Assign operators to the new dual constraints based on primal sign restrictions
+            for (int i = 0; i < numberOfVariables; i++)
             {
-                string constraintOperator = model.OperatorsConstraints[j];
-                if (constraintOperator == ">=")
-                {
-                    dualModel.OperatorsConstraints[j] = "<=";
-                }
-                else if (constraintOperator == "<=")
-                {
-                    dualModel.OperatorsConstraints[j] = ">=";
-                }
-                else
-                {
-                    throw new InvalidOperationException("Unknown constraint operator.");
-                }
+                // If primal problem has a maximization objective, dual constraints will have "≥"
+                // If primal problem has a minimization objective, dual constraints will have "≤"
+                dualModel.OperatorsConstraints[i] = ProblemType == "max" ? ">=" : "<=";
             }
 
-            dualModel.SignRestrictions = model.SignRestrictions;
+            dualModel.SignRestrictions = SignRestrictions;
 
             return dualModel;
         }

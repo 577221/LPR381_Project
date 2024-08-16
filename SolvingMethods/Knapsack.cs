@@ -252,19 +252,15 @@ namespace LPR381_Project
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
 
             // Append each output to the StringBuilder
-            sb.AppendLine("Ranking Table:");
             sb.AppendLine(RankingTable());
             sb.AppendLine();
 
-            sb.AppendLine("Ranking Evaluation:");
             sb.AppendLine(RankingEvaluation());
             sb.AppendLine();
 
-            sb.AppendLine("Sub-Problems:");
             sb.AppendLine(GenerateSubProblems());
             sb.AppendLine();
 
-            sb.AppendLine("Best Solution:");
             sb.AppendLine(FindBestSolution());
 
             // Write the contents to the specified file
