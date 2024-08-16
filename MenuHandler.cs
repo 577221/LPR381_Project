@@ -94,7 +94,7 @@ namespace LPR381_Project
                     {
                         Primal primal = new Primal(model);
                         primal.Solve();
-                        Console.WriteLine(primal.ToString());
+                        //Console.WriteLine(primal.ToString());
                     }
                     catch (Exception ex)
                     {

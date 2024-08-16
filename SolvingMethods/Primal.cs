@@ -32,34 +32,77 @@ namespace LPR381_Project.SolvingMethods
 
                 // 1. Find the entering variable (most negative value in the objective row)
                 int entering = 0;
-                for (int i = 1; i < tablua.GetLength(1); i++) // Start from 1 to skip the RHS column
+                if (model.ProblemType == "max")
                 {
-                    if (tablua[0, i] < tablua[0, entering])
+                    //This part of the code is called if the problem is a maximisation problem
+                    for (int i = 1; i < tablua.GetLength(1); i++) // Start from 1 to skip the RHS column
                     {
-                        entering = i;
+                        if (tablua[0, i] < tablua[0, entering])
+                        {
+                            entering = i;
+                        }
+                    }
+
+                    // If all values are non-negative, the current solution is optimal
+                    if (tablua[0, entering] >= 0)
+                    {
+                        optimal = true;
+                        continue;
                     }
                 }
-
-                // If all values are non-negative, the current solution is optimal
-                if (tablua[0, entering] >= 0)
+                else
                 {
-                    optimal = true;
-                    continue;
+                    //This part of the code is called if the problem is a minimisation problem
+                    for (int i = 1; i < tablua.GetLength(1); i++) // Start from 1 to skip the RHS column
+                    {
+                        if (tablua[0, i] > tablua[0, entering])
+                        {
+                            entering = i;
+                        }
+                    }
+
+                    // If all values are negative, the current solution is optimal
+                    if (tablua[0, entering] <= 0)
+                    {
+                        optimal = true;
+                        continue;
+                    }
                 }
+                
 
                 // 2. Find the exiting variable using the ratio test
                 int exiting = -1;
-                float minRatio = float.MaxValue;
-
-                for (int i = 1; i < tablua.GetLength(0); i++) // Skip the objective row
+                if (model.ProblemType == "max")
                 {
-                    if (tablua[i, entering] > 0) // Avoid division by zero
+                    float minRatio = float.MaxValue;
+
+                    for (int i = 1; i < tablua.GetLength(0); i++) // Skip the objective row
                     {
-                        float ratio = tablua[i, tablua.GetLength(1) - 1] / tablua[i, entering];
-                        if (ratio < minRatio)
+                        if (tablua[i, entering] > 0) // Avoid division by zero
                         {
-                            minRatio = ratio;
-                            exiting = i;
+                            float ratio = tablua[i, tablua.GetLength(1) - 1] / tablua[i, entering];
+                            if (ratio < minRatio)
+                            {
+                                minRatio = ratio;
+                                exiting = i;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    float minRatio = float.MinValue;
+
+                    for (int i = 1; i < tablua.GetLength(0); i++) // Skip the objective row
+                    {
+                        if (tablua[i, entering] > 0) // Avoid division by zero
+                        {
+                            float ratio = tablua[i, tablua.GetLength(1) - 1] / tablua[i, entering];
+                            if (ratio > minRatio)
+                            {
+                                minRatio = ratio;
+                                exiting = i;
+                            }
                         }
                     }
                 }
@@ -72,6 +115,8 @@ namespace LPR381_Project.SolvingMethods
                 // 3. Pivot around the exiting variable
                 Pivot(exiting, entering);
             }
+            Console.WriteLine("Optimal Table: ");
+            Console.WriteLine(ToString() );
         }
 
         private void Prepare()
