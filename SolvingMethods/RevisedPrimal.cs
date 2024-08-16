@@ -226,8 +226,11 @@ namespace LPR381_Project.SolvingMethods
 
                 iteration++;
                 Console.WriteLine("----------------------\n");
+                Console.WriteLine(ToString());
+                Console.WriteLine("----------------------\n");
             } while (!solved);
             
+
         }
 
         private void Prepare()
@@ -430,8 +433,64 @@ namespace LPR381_Project.SolvingMethods
 
         public override string ToString()
         {
-            string myString = string.Empty;
-            return base.ToString();
+            int numConstraints = model.ConstraintsCoefficients.GetLength(0);
+            int numVariables = model.ConstraintsCoefficients.GetLength(1);
+
+            // Create headers
+            string[] headers = new string[numVariables + numConstraints + 1]; // Including RHS
+            for (int i = 0; i < numVariables; i++)
+            {
+                headers[i] = $"x{i + 1}";
+            }
+            for (int i = 0; i < numConstraints; i++)
+            {
+                headers[numVariables + i] = $"s{i + 1}"; // Slack variables
+            }
+            headers[headers.Length - 1] = "RHS"; // Last column for RHS
+
+
+            // Create the header row with padding
+            string headerRow = string.Join(" | ", headers.Select(h => h.PadLeft(10)));
+            string separator = new string('-', headerRow.Length);
+
+            // Convert tableau to string with headers and iteration
+            string myString = $"{headerRow}\n{separator}\n";
+            /*
+            for (int i = 0; i < tablua.GetLength(0); i++)
+            {
+                for (int j = 0; j < tablua.GetLength(1); j++)
+                {
+                    myString += tablua[i, j].ToString("F2").PadLeft(10);
+                }
+                myString += "\n";
+            }
+            */
+           
+            //Writes the NBV values the text file.
+            for (int i = 0; i < NBV.GetLength(1); i++)
+            {
+                myString += NBV[0, i].ToString("F2").PadLeft(10);
+            }
+            //Writes CBV values to the textfile
+            for (int i = 0; i < CBV.GetLength(1); i++)
+            {
+                myString += CBV[0, i].ToString("F2").PadLeft(10);
+            }
+            myString += '\n';
+
+
+            //int hight = 
+            for (int i = 0; i < BInv.GetLength(1); i++)
+            {
+                for (int j = 0; j < BInv.GetLength(0); j++)
+                {
+                    Console.Write($"{BInv[i, j]} ");
+                }
+                Console.WriteLine("");
+            }
+
+
+            return myString;
         }
     }
 
