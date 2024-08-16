@@ -10,6 +10,7 @@ namespace LPR381_Project
     internal class MenuHandler
     {
         public Model model;
+        string outputFilePath = "output.txt";
 
         public MenuHandler(Model model)
         {
@@ -39,6 +40,8 @@ namespace LPR381_Project
             ObjectiveCoefficientChange = 1,
             ConstraintCoefficientChange,
             RHSChange,
+            NewActivity,
+            NewConstraint,
             ReturnToSubMenu
         }
 
@@ -58,12 +61,12 @@ namespace LPR381_Project
                 Console.WriteLine("6. Other");
                 Console.WriteLine("7. Exit");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 - 7:");
+                Console.WriteLine("Please enter anumber between 1 and 7:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
-                if (!validChoice || choice < 1 || choice > 6)
+                if (!validChoice || choice < 1 || choice > 7)
                 {
                     Console.WriteLine("Invalid choice. Please enter a number between 1 and 7.");
                     continue;
@@ -156,6 +159,7 @@ namespace LPR381_Project
                         Console.WriteLine(generateSubProblems);
                         Console.WriteLine();
                         Console.WriteLine(bestSolution);
+                        knapsack.SaveOutputToFile(outputFilePath);
                     }
                     catch (Exception ex)
                     {
@@ -186,14 +190,14 @@ namespace LPR381_Project
                 Console.WriteLine("2. Duality");
                 Console.WriteLine("3. Return to Main Menu");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 - 3:");
+                Console.WriteLine("Please enter a number between 1 and 3:");
 
                 int choice;
                 bool validChoice = int.TryParse(Console.ReadLine(), out choice);
 
-                if (!validChoice || choice < 1 || choice > 2)
+                if (!validChoice || choice < 1 || choice > 3)
                 {
-                    Console.WriteLine("Invalid choice. Please enter 1 - 3.");
+                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
                     continue;
                 }
 
@@ -253,16 +257,18 @@ namespace LPR381_Project
                 Console.WriteLine();
                 Console.WriteLine("Sensitivity Analysis Options:");
                 Console.WriteLine("-----------------------------");
-                Console.WriteLine("1. Objective Coefficient Change");
-                Console.WriteLine("2. Constraint Coefficient Change");
-                Console.WriteLine("3. RHS Change");
-                Console.WriteLine("4. Return to Previous Menu");
+                Console.WriteLine("1. Change Objective Coefficient");
+                Console.WriteLine("2. Change Constraint Coefficient");
+                Console.WriteLine("3. Change RHS Value");
+                Console.WriteLine("4. Add a new activity");
+                Console.WriteLine("5. Add a new constraint");
+                Console.WriteLine("6. Return to Previous Menu");
                 Console.WriteLine();
-                Console.WriteLine("Please enter 1 - 4:");
+                Console.WriteLine("Please enter a number between 1 and 6:");
 
-                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 3)
+                if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > 6)
                 {
-                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 3.");
+                    Console.WriteLine("Invalid choice. Please enter a number between 1 and 6.");
                     continue;
                 }
 
@@ -285,15 +291,34 @@ namespace LPR381_Project
             switch (choice)
             {
                 case SensitivityMenu.ObjectiveCoefficientChange:
-                    Console.WriteLine("Objective Coefficient Change analysis not yet implemented.");
+                    Console.WriteLine("What variable's objective function value would you like to change? (1 for x1, 2 for x2 etc.)");
+                    string objVariable = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int objValue = int.Parse(Console.ReadLine());
+
                     break;
 
                 case SensitivityMenu.ConstraintCoefficientChange:
-                    Console.WriteLine("Constraint Coefficient Change analysis not yet implemented.");
+                    Console.WriteLine("What variable's constraint value would you like to change? (1 for x1, 2 for x2 etc.)");
+                    string constraintVariable = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int constraintValue = int.Parse(Console.ReadLine());
+
                     break;
 
                 case SensitivityMenu.RHSChange:
-                    Console.WriteLine("RHS Change analysis not yet implemented.");
+                    Console.WriteLine("What rhs value would you like to change? (1 for C1, 2 for C2 etc.)");
+                    string rhsConstraint = Console.ReadLine();
+                    Console.WriteLine("Please enter the new value: ");
+                    int rhsValue = int.Parse(Console.ReadLine());
+
+                    break;
+
+                case SensitivityMenu.NewActivity:
+                    break;
+
+                case SensitivityMenu.NewConstraint:
+                    Console.WriteLine("Please enter the new constraint (form: x1 +/-x2 +/-x3 <=/>= rhs): ");
                     break;
             }
         }

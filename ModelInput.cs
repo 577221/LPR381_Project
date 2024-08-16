@@ -57,7 +57,7 @@ public class ModelInput
             Constraints.Add(constraint);
         }
 
-        SignRestrictions.AddRange(lines[^1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+        SignRestrictions.AddRange(lines[lines.Length - 1].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
     }
 }
 

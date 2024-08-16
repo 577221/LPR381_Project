@@ -131,16 +131,28 @@ namespace LPR381_Project
             return dualModel;
         }
 
-        /*public (double[] primalSolution, double[] dualSolution) SolveDuality()
+        /*public double[] SolvePrimalForm()
         {
             // Solve the primal form using the SimplexSolver
-            double[] primalSolution = SimplexSolver.Solve(model);
+            return SimplexSolver.Solve(model);
+        }
 
+        public double[] SolveDualForm()
+        {
             // Apply duality to get the dual model
             Model dualModel = ApplyDuality();
 
             // Solve the dual form using the SimplexSolver
-            double[] dualSolution = SimplexSolver.Solve(dualModel);
+            return SimplexSolver.Solve(dualModel);
+        }
+
+        public (double[] primalSolution, double[] dualSolution) SolveDuality()
+        {
+            // Solve the primal form
+            double[] primalSolution = SolvePrimalForm();
+
+            // Solve the dual form
+            double[] dualSolution = SolveDualForm();
 
             return (primalSolution, dualSolution);
         }*/

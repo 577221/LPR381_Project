@@ -4,15 +4,20 @@ namespace LPR381_Project.SolvingMethods
 {
     internal class SimplexSolver
     {
-        public static double[] Solve(double[] objective, double[,] constraints, double[] bounds)
+        public static double[] Solve(Model model)
         {
+            // Extract data from the Model object
+            double[] objective = Array.ConvertAll(model.ObjFunction, item => (double)item);
+            double[,] constraints = ConvertConstraintsToDouble(model.ConstraintsCoefficients);
+            double[] bounds = Array.ConvertAll(model.RhsConstraints, item => (double)item);
+
             int numVariables = objective.Length;
             int numConstraints = bounds.Length;
 
             // Initializing the tableau
             double[,] tableau = InitializeTableau(objective, constraints, bounds, numVariables, numConstraints);
 
-            // Perform Simplex algorithm
+            // Perform the Simplex algorithm
             while (true)
             {
                 // Identify the pivot column (most negative coefficient in the objective row)
@@ -63,20 +68,14 @@ namespace LPR381_Project.SolvingMethods
             double[] solution = new double[numVariables];
             for (int j = 0; j < numVariables; j++)
             {
-                bool isBasic = false;
+                solution[j] = 0;  // Initialize with 0
                 for (int i = 0; i < numConstraints; i++)
                 {
                     if (tableau[i, j] == 1 && tableau[i, numVariables + i] == 1)
                     {
                         solution[j] = tableau[i, numVariables + numConstraints];
-                        isBasic = true;
                         break;
                     }
-                }
-
-                if (!isBasic)
-                {
-                    solution[j] = 0;
                 }
             }
 
@@ -129,6 +128,23 @@ namespace LPR381_Project.SolvingMethods
                     }
                 }
             }
+        }
+
+        private static double[,] ConvertConstraintsToDouble(int[,] intArray)
+        {
+            int rows = intArray.GetLength(0);
+            int cols = intArray.GetLength(1);
+            double[,] doubleArray = new double[rows, cols];
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    doubleArray[i, j] = (double)intArray[i, j];
+                }
+            }
+
+            return doubleArray;
         }
     }
 }

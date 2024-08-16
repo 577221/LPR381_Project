@@ -44,7 +44,7 @@ namespace LPR381_Project
             {
                 var firstLineParts = lines[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 model.ProblemType = firstLineParts[0];
-                model.ObjFunction = firstLineParts.Skip(1).Select(int.Parse).ToArray();
+                model.ObjFunction = firstLineParts.Select(int.Parse).ToArray();
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace LPR381_Project
@@ -243,6 +244,31 @@ namespace LPR381_Project
             sb.AppendLine($"Objective Value (z): {bestValue:F2}");
 
             return sb.ToString();
+        }
+
+        public void SaveOutputToFile(string outputFilePath)
+        {
+            // Create a StringBuilder to store all outputs
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+            // Append each output to the StringBuilder
+            sb.AppendLine("Ranking Table:");
+            sb.AppendLine(RankingTable());
+            sb.AppendLine();
+
+            sb.AppendLine("Ranking Evaluation:");
+            sb.AppendLine(RankingEvaluation());
+            sb.AppendLine();
+
+            sb.AppendLine("Sub-Problems:");
+            sb.AppendLine(GenerateSubProblems());
+            sb.AppendLine();
+
+            sb.AppendLine("Best Solution:");
+            sb.AppendLine(FindBestSolution());
+
+            // Write the contents to the specified file
+            File.WriteAllText(outputFilePath, sb.ToString());
         }
     }
 }
