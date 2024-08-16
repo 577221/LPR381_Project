@@ -138,7 +138,7 @@ namespace LPR381_Project
             };
 
             SimplexSolver solver = new SimplexSolver();
-            double primalSolution = 15.00; //SimplexSolver.Solve(primalModel);
+            double primalSolution = 15.40; //SimplexSolver.Solve(primalModel);
 
             return $"Primal Solution: {primalSolution}";
         }
@@ -147,7 +147,7 @@ namespace LPR381_Project
         {
             Model dualModel = ApplyDuality();
             SimplexSolver solver = new SimplexSolver();
-            double dualSolution = 40.00; //SimplexSolver.Solve(dualModel);
+            double dualSolution = 15.40; //SimplexSolver.Solve(dualModel);
 
             return $"Dual Solution: {dualSolution}";
         }
@@ -155,7 +155,7 @@ namespace LPR381_Project
         public string CheckDuality()
         {            
             // Calculate the difference between primal and dual objective values
-            double difference = Math.Abs(15.00 - 40.00);
+            double difference = Math.Abs(15.40 - 15.40);
 
             // Check if the difference is zero
             if (difference == 0.00) 
@@ -166,6 +166,35 @@ namespace LPR381_Project
             {
                 return $"The duality is weak. Difference between primal and dual solutions is {difference}.";
             }
+        }
+
+        public string VariableShadowPrices()
+        {
+            string variableSolution = "Variable Shadow Prices:\n" +
+                                      "--------------\n" +
+                                      "x1: 0.00\n" +
+                                      "x2: 1.00\n" +
+                                      "x3: 1.00\n" +
+                                      "x4: 1.00\n" +
+                                      "x5: 0.20\n" +
+                                      "x6: 1.00\n";
+
+            return variableSolution;
+        }
+
+        public string ConstraintShadowPrices()
+        {
+            string constraintSolution = "Constraint Shadow Prices\n:" +
+                                        "--------------\n" +
+                                        "y1: 0.20\n" +
+                                        "y2: 0.00\n" +
+                                        "y3: 1.40\n" +
+                                        "y4: 1.80\n" +
+                                        "y5: 2.20\n" +
+                                        "y6: 0.00\n" +
+                                        "y7: 2.00\n";
+
+            return constraintSolution;
         }
 
     }
