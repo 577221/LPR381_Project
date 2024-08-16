@@ -249,9 +249,20 @@ namespace LPR381_Project
                             model.OperatorsConstraints,
                             model.RhsConstraints,
                             model.SignRestrictions);
+
+                        // Print the primal form
                         Console.WriteLine(duality.PrimalForm());
+
+                        // Apply duality to get the dual model
                         Model dualModel = duality.ApplyDuality();
+
+                        // Print the dual form
                         Console.WriteLine(duality.DualForm(dualModel));
+
+                        Console.WriteLine(duality.SolvePrimal());
+                        Console.WriteLine(duality.SolveDual());
+                        Console.WriteLine(duality.CheckDuality());
+
                     }
                     catch (Exception ex)
                     {
